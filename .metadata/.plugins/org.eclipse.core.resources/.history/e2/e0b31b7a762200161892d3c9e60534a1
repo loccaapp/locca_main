@@ -1,0 +1,13 @@
+package test;
+
+import helper.OperationResult;
+import managers.UserManager;
+public class Test {
+
+	public static void main(String[] args) {
+		UserManager usman = new UserManager();
+		OperationResult result = usman.getUsers();
+		System.out.println(result.isSuccess);
+	}
+
+}

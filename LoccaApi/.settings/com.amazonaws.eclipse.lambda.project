@@ -1,0 +1,5 @@
+#Lambda Function Project Metadata
+#Sat May 28 23:22:26 EEST 2016
+lastDeploymentFunctionName=GetBestPostsByLocation
+lastDeploymentBucketName=erdemisguder
+lastDeploymentEndpoint=https\://lambda.us-west-2.amazonaws.com/

@@ -1,0 +1,24 @@
+package NewsFeedController;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+
+import InDTOs.GetBestPostsByLocationInDTO;
+import OutDTOs.GetBestPostsByLocationOutDTO;
+import helper.OperationResult;
+import managers.PostManager;
+
+public class GetBestPostsByLocation implements RequestHandler<GetBestPostsByLocationInDTO, GetBestPostsByLocationOutDTO>{
+
+	@Override
+	public GetBestPostsByLocationOutDTO handleRequest(GetBestPostsByLocationInDTO input, Context context) {
+
+		int pageingCount = 10;
+		int pageNumber = input.page_number;
+		int start = pageNumber * pageingCount;
+		OperationResult result = new PostManager()
+				.getBestPostsByLocation(input.location_id, start,input.page_number);
+		return null;
+	}
+
+}

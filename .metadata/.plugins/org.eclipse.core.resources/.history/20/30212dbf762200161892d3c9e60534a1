@@ -1,0 +1,19 @@
+package test;
+
+import helper.OperationResult;
+import managers.UserManager;
+public class Test {
+
+	public static void main(String[] args) {
+		UserManager usman = new UserManager();
+		OperationResult result = usman.getUsers();
+		System.out.println(result.isSuccess);
+		if(result.isSuccess){
+			ArrayList<User> users = (ArrayList<User>)result.object;
+			for(int i = 0 ; i < result.object){
+				
+			}
+		}
+	}
+
+}

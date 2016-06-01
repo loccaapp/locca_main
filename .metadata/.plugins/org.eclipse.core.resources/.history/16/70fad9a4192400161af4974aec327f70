@@ -1,0 +1,15 @@
+package test;
+
+import helper.OperationResult;
+import managers.LikeManager;
+import managers.PostManager;
+import models.Post;
+
+public class TestGetLikeByUserIdAndPostId {
+	
+	public static void main(String[] args) {
+
+		OperationResult result = new LikeManager().getLikeByUserIdAndPostId(1, 1);
+		System.out.println(result.message);
+	}
+}

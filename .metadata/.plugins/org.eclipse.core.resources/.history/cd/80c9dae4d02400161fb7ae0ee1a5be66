@@ -1,0 +1,13 @@
+package models;
+
+public class Post {
+
+	public int post_id;
+	public int user_id;
+	public int location_id;
+	public char post_type;
+	public String post_text;
+	public int post_image_id;
+	public int like_count;
+	public int dislike_count;
+}

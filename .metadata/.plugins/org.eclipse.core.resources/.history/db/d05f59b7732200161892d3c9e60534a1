@@ -1,0 +1,10 @@
+package managers;
+
+public class UserManager extends BaseManager {
+
+	public UserManager() {
+		super();
+	}
+	
+	
+}

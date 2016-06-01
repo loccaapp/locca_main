@@ -1,0 +1,13 @@
+package test;
+
+import java.util.ArrayList;
+
+import helper.OperationResult;
+import managers.UserManager;
+import models.User;
+
+public class TestPostInsert {
+	public static void main(String[] args) {
+		
+	}
+}

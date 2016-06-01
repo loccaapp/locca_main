@@ -1,0 +1,11 @@
+package OutDTOs;
+
+import java.util.ArrayList;
+
+import Items.PostItem;
+
+public class GetLastPostsByLocation extends BaseOutDTO {
+	
+	public ArrayList<PostItem> posts;
+
+}

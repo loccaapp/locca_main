@@ -1,0 +1,10 @@
+package OutDTOs;
+
+import java.util.ArrayList;
+
+import Items.UserItem;
+
+public class GetUsersOutDTO extends BaseOutDTO{
+
+	public ArrayList<UserItem> foundUsers;
+}

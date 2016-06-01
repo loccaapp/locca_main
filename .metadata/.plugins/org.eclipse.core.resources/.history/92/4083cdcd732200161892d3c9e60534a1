@@ -1,0 +1,15 @@
+package managers;
+
+import com.mysql.jdbc.Statement;
+
+public class UserManager extends BaseManager {
+
+	public UserManager() {
+		super();
+	}
+	
+		
+	public OperationResult getLastUser(){
+		dbStatement = (Statement) dbConnection.createStatement();
+	}
+}

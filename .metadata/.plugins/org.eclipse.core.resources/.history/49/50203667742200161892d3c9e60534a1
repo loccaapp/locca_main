@@ -1,0 +1,28 @@
+package managers;
+
+import java.sql.SQLException;
+
+import com.mysql.jdbc.Statement;
+
+import helper.OperationResult;
+
+public class UserManager extends BaseManager {
+
+	public UserManager() {
+		super();
+	}
+	
+		
+	public OperationResult getUsers(){
+		try {
+			dbStatement = (Statement) dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery("SELECT * FROM tp_user");
+		} catch (SQLException e) {
+			OperationResult result = new OperationResult();
+			result.isSuccess = false;
+			result.message = e.getMessage();
+			return result;
+			e.printStackTrace();
+		}
+	}
+}

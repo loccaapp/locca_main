@@ -1,0 +1,22 @@
+package NewsFeedController;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import models.Post;
+import InDTOs.BaseInDTO;
+import InDTOs.SendPostInDTO;
+import OutDTOs.GetUsersOutDTO;
+import OutDTOs.SendPostOutDTO;
+
+public class SendPost implements RequestHandler<SendPostInDTO, SendPostOutDTO> {
+
+    @Override
+    public SendPostOutDTO handleRequest(SendPostInDTO input, Context context) {
+        context.getLogger().log("Input: " + input);
+        
+        Post post = new Post();
+        
+		return null;
+        
+    }
+}

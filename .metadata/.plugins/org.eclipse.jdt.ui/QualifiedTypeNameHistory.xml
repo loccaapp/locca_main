@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.sql.Date"/>
+<fullyQualifiedTypeName name="com.mysql.jdbc.Connection"/>
+<fullyQualifiedTypeName name="java.sql.DriverManager"/>
+<fullyQualifiedTypeName name="java.sql.ResultSet"/>
+<fullyQualifiedTypeName name="managers.UserManager"/>
+<fullyQualifiedTypeName name="OutDTOs.GetUsersOutDTO"/>
+<fullyQualifiedTypeName name="Items.UserItem"/>
+<fullyQualifiedTypeName name="InDTOs.BaseInDTO"/>
+<fullyQualifiedTypeName name="InDTOs.SendPostInDTO"/>
+<fullyQualifiedTypeName name="OutDTOs.SendPostOutDTO"/>
+<fullyQualifiedTypeName name="java.math.BigInteger"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="com.mysql.jdbc.Statement"/>
+<fullyQualifiedTypeName name="models.Like"/>
+<fullyQualifiedTypeName name="InDTOs.LikePostInDTO"/>
+<fullyQualifiedTypeName name="managers.LikeManager"/>
+<fullyQualifiedTypeName name="OutDTOs.LikePostOutDTO"/>
+<fullyQualifiedTypeName name="InDTOs.DislikeInDTO"/>
+<fullyQualifiedTypeName name="OutDTOs.DislikePostOutDTO"/>
+<fullyQualifiedTypeName name="java.sql.Timestamp"/>
+<fullyQualifiedTypeName name="utils.Timef"/>
+<fullyQualifiedTypeName name="models.Location"/>
+<fullyQualifiedTypeName name="com.amazonaws.services.lambda.runtime.RequestHandler"/>
+<fullyQualifiedTypeName name="InDTOs.GetBestPostsByLocationInDTO"/>
+<fullyQualifiedTypeName name="OutDTOs.BaseOutDTO"/>
+<fullyQualifiedTypeName name="managers.PostManager"/>
+<fullyQualifiedTypeName name="helper.OperationResult"/>
+<fullyQualifiedTypeName name="OutDTOs.GetBestPostsByLocationOutDTO"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="models.Post"/>
+<fullyQualifiedTypeName name="Items.PostItem"/>
+<fullyQualifiedTypeName name="models.User"/>
+<fullyQualifiedTypeName name="NewsFeedController.GetLastPostsByLocation"/>
+<fullyQualifiedTypeName name="InDTOs.GetLastPostsByLocationInDTO"/>
+<fullyQualifiedTypeName name="OutDTOs.GetLastPostsByLocationOutDTO"/>
+</qualifiedTypeNameHistroy>

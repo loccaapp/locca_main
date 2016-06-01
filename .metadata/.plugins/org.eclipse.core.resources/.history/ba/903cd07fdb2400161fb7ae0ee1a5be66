@@ -1,0 +1,5 @@
+package InDTOs;
+
+public class GetBestPostsByLocationInDTO {
+
+}

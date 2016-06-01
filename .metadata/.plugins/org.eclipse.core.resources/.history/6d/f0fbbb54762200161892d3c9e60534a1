@@ -1,0 +1,11 @@
+package test;
+
+import managers.UserManager;
+public class Test {
+
+	public static void main(String[] args) {
+		UserManager usman = new UserManager();
+		OperationResult result = usman.getUsers();
+	}
+
+}

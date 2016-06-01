@@ -1,0 +1,15 @@
+package test;
+
+import helper.OperationResult;
+import managers.LikeManager;
+
+public class TestTransLikePost {
+
+	public static void main(String[] args) {
+
+		OperationResult result = new OperationResult();
+		result = new LikeManager().transLikePost();
+		System.out.println(result.message);
+	}
+
+}

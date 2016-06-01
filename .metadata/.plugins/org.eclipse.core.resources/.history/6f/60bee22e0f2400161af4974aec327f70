@@ -1,0 +1,10 @@
+package utils;
+
+import java.sql.Timestamp;
+
+public class Timef {
+	
+	public static Timestamp getDateTime(){
+		
+	}
+}

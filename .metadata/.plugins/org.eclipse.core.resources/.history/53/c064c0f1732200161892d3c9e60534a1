@@ -1,0 +1,25 @@
+package managers;
+
+import java.sql.SQLException;
+
+import com.mysql.jdbc.Statement;
+
+import helper.OperationResult;
+
+public class UserManager extends BaseManager {
+
+	public UserManager() {
+		super();
+	}
+	
+		
+	public OperationResult getLastUser(){
+		try {
+			dbStatement = (Statement) dbConnection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dbResultSet = dbStatement.executeQuery("SELECT * FROM tp_user");
+	}
+}

@@ -1,0 +1,6 @@
+package InDTOs;
+
+public class LikeInDTO extends BaseInDTO {
+
+	public int post_id;
+}

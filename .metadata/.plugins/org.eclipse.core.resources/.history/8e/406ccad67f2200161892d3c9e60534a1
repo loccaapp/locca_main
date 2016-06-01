@@ -1,0 +1,19 @@
+package NewsFeedController;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.S3Event;
+
+import InDTOs.BaseInDTO;
+
+public class GetUsers implements RequestHandler<BaseInDTO, Object> {
+
+    @Override
+    public Object handleRequest(BaseInDTO input, Context context) {
+        context.getLogger().log("Input: " + input);
+
+        // TODO: implement your handler
+        return null;
+    }
+
+}
