@@ -3,6 +3,7 @@ package models;
 import java.sql.Timestamp;
 
 public class Like {
+	//uygar first comment
 	public int post_id;
 	public int effecter_user_id;
 	public int user_id;
