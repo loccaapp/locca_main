@@ -1,6 +1,9 @@
 package models;
 
+import java.sql.*;
+
 public class Location {
+	
 	public int location_id;
 	public int country_code;
 	public int city_id;
@@ -14,4 +17,9 @@ public class Location {
 	public double radius;
 	public String status_id;
 	public String location_tags;
+	public Timestamp start_ts;
+	public Timestamp end_ts;
+	public Timestamp create_ts;
+	public Timestamp update_ts;
+	
 }

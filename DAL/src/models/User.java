@@ -1,6 +1,6 @@
 package models;
 
-import java.sql.Date;
+import java.sql.*;
 
 public class User {
 
@@ -18,5 +18,12 @@ public class User {
 	public String motto;
 	public Date birthdate;
 	public int phone_country_code;
+	public int phone_operator_code;
+	public int phone_num;
+	public String status_id;
+	public int account_try_count;
+	public Timestamp last_activity_ts;
+	public Timestamp create_ts;
+	public Timestamp update_ts;
 	
 }
