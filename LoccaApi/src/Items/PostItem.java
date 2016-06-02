@@ -2,7 +2,7 @@ package Items;
 
 public class PostItem {
 
-	public int post_id;
+	public long post_id;
 	public int user_id;
 	public int location_id;
 	public int like_count;
