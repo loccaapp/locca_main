@@ -5,7 +5,7 @@ import java.sql.*;
 public class Location {
 	
 	public int location_id;
-	public int country_code;
+	public int country_id;
 	public int city_id;
 	public String district_name;
 	public String location_name;

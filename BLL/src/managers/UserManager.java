@@ -16,6 +16,7 @@ public class UserManager extends BaseManager {
 	}
 			
 	public OperationResult getUsers(){
+		
 		try {
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery("SELECT * FROM tp_user");
@@ -45,67 +46,44 @@ public class UserManager extends BaseManager {
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
 		
-		int i = 0 ;
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
-			i++;
 			
 			dbResultSet = dbStatement.executeQuery("select user_id, username, user_pwd, user_type, user_sub_type, name_first, name_last, email_address, picture_id, education, gender, motto, birthdate, phone_country_code, phone_operator_code, phone_num, status_id, account_try_count, last_activity_ts, create_ts, update_ts "
 					+ " from tp_user where user_id = " + user_id + " ");		
 			
-			i++;
-			
 			User user = new User();
 			while(dbResultSet.next()){
-			i++;
-			user.user_id = dbResultSet.getInt("user_id");
-			i++;
-			user.username = dbResultSet.getString("username");
-			i++;
-			user.user_pwd = dbResultSet.getString("user_pwd");
-			i++;
-			user.user_type = dbResultSet.getString("user_type");
-			i++;
-			user.user_sub_type = dbResultSet.getString("user_sub_type");
-			i++;
-			user.name_first = dbResultSet.getString("name_first");
-			i++;
-			user.name_last = dbResultSet.getString("name_last");	
-			i++;
-			user.email_address = dbResultSet.getString("email_address");
-			i++;
-			user.picture_id = dbResultSet.getString("picture_id");
-			i++;
-			user.education = dbResultSet.getString("education");
-			i++;
-			user.gender = dbResultSet.getString("gender");
-			i++;
-			user.motto = dbResultSet.getString("motto");	
-			i++;
-			user.birthdate = dbResultSet.getDate("birthdate");
-			i++;
-			user.phone_country_code = dbResultSet.getInt("phone_country_code");
+				user.user_id = dbResultSet.getInt("user_id");
+				user.username = dbResultSet.getString("username");
+				user.user_pwd = dbResultSet.getString("user_pwd");
+				user.user_type = dbResultSet.getString("user_type");
+				user.user_sub_type = dbResultSet.getString("user_sub_type");
+				user.name_first = dbResultSet.getString("name_first");
+				user.name_last = dbResultSet.getString("name_last");	
+				user.email_address = dbResultSet.getString("email_address");
+				user.picture_id = dbResultSet.getString("picture_id");
+				user.education = dbResultSet.getString("education");
+				user.gender = dbResultSet.getString("gender");
+				user.motto = dbResultSet.getString("motto");	
+				user.birthdate = dbResultSet.getDate("birthdate");
+				user.phone_country_code = dbResultSet.getInt("phone_country_code");
 			}
 			
-			i++;
 			OperationResult result = new OperationResult();
-			i++;
 			result.isSuccess = true;
-			i++;
 			result.message = "Success";
-			i++;
 			result.object = user;
-			i++;
 			return result;
 			
 		} catch (SQLException e) {
 			OperationResult result = new OperationResult();
 			result.isSuccess = false;
-			result.message = "iii: " + i + "User: " + user_id + " Error1 : " 
+			result.message = "User: " + user_id + " Error1 : " 
 					+ e.getStackTrace() + "=="
-					+ e.getMessage() + "--" 
-					+ e.getErrorCode()+ "**" 
-					+ e.getSQLState() + "++" 
+					+ e.getMessage()    + "--" 
+					+ e.getErrorCode()  + "**" 
+					+ e.getSQLState()   + "++" 
 					+ e.getStackTrace();
 			return result;
 		}		
