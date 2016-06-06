@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.mysql.jdbc.Statement;
 
+import helper.OperationCode;
 import helper.OperationResult;
 import models.User;
 
@@ -85,6 +86,51 @@ public class UserManager extends BaseManager {
 					+ e.getErrorCode()  + "**" 
 					+ e.getSQLState()   + "++" 
 					+ e.getStackTrace();
+			return result;
+		}		
+	}
+	
+	//added by ue 01.06.2016
+	public OperationResult loginUser(String username, String user_pwd , String email_address){
+		
+		OperationResult result = new OperationResult();
+		try {			
+			dbStatement = (Statement) dbConnection.createStatement();
+			
+			dbResultSet = dbStatement.executeQuery("select user_id from "
+					+ " tp_user where (username = '" + username + "' or "
+								   + " email_address = '" + email_address + "' ) and "
+								   + " user_pwd = '" + user_pwd + "' ");		
+			
+			int user_id = 0;
+			while(dbResultSet.next()){
+				user_id = dbResultSet.getInt("user_id");
+			}		
+
+			if(user_id > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("loginUser", username , "Success for user_name");
+				result.object = user_id;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("loginUser", username , "Failure for user_name");	
+				result.object = user_id;
+			}
+			return result;
+			
+		} catch (SQLException e) {
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("loginUser", username , e.getMessage());
+			result.object = " ";
 			return result;
 		}		
 	}

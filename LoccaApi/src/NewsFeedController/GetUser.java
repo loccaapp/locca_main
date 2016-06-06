@@ -20,15 +20,11 @@ public class GetUser implements RequestHandler<BaseInDTO, GetUserOutDTO> {
         context.getLogger().log("Input: " + input);
         
         OperationResult result = new UserManager().getUser(input.user_id);
-                              
-        
-        
+                                   
         GetUserOutDTO dto = new GetUserOutDTO();
         dto.isSuccess = result.isSuccess;
         dto.message = result.message;
         dto.user = (User)result.object;
-        
-        
         
         return dto;               
     }
