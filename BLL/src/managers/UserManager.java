@@ -47,6 +47,7 @@ public class UserManager extends BaseManager {
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
 		
+		OperationResult result = new OperationResult();
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
 			
@@ -71,21 +72,30 @@ public class UserManager extends BaseManager {
 				user.phone_country_code = dbResultSet.getInt("phone_country_code");
 			}
 			
-			OperationResult result = new OperationResult();
-			result.isSuccess = true;
-			result.message = "Success";
-			result.object = user;
+			if(user.user_id > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getUser", Integer.toString(user_id) , "Success for user_id");
+				result.object = user;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getUser", Integer.toString(user_id) , "Failure for user_id");	
+				result.object = user;
+			}
 			return result;
 			
 		} catch (SQLException e) {
-			OperationResult result = new OperationResult();
 			result.isSuccess = false;
-			result.message = "User: " + user_id + " Error1 : " 
-					+ e.getStackTrace() + "=="
-					+ e.getMessage()    + "--" 
-					+ e.getErrorCode()  + "**" 
-					+ e.getSQLState()   + "++" 
-					+ e.getStackTrace();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("getUser", Integer.toString(user_id) , e.getMessage());
+			result.object = " ";
 			return result;
 		}		
 	}

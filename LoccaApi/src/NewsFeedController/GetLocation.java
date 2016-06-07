@@ -11,13 +11,13 @@ import helper.OperationResult;
 import managers.LocationManager;
 import models.*;
 
-public class GetLocations implements RequestHandler<LocationInDTO, LocationOutDTO>  {
+public class GetLocation implements RequestHandler<LocationInDTO, LocationOutDTO>  {
 
     @Override
     public LocationOutDTO handleRequest(LocationInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
-        
-        OperationResult result = new LocationManager().getLocations(input.search_text);
+                
+        OperationResult result = new LocationManager().getLocation(input.location_id);
         
         ArrayList<Location> locations;
         
