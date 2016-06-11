@@ -46,7 +46,7 @@ public class UserManager extends BaseManager {
 	
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
-		
+		//comment1
 		OperationResult result = new OperationResult();
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
