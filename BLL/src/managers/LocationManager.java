@@ -171,8 +171,11 @@ public class LocationManager  extends BaseManager {
 								 + "	order by distance asc ");
 			
 			ArrayList<Location> locations = new ArrayList<Location>();
-			Location location = new Location();
+			
+			String abc = " ";
 			while(dbResultSet.next()){ 
+								
+				Location location = new Location();
 				
 				location.location_id = dbResultSet.getInt("location_id");
 				location.country_id = dbResultSet.getInt("country_id");
@@ -193,6 +196,8 @@ public class LocationManager  extends BaseManager {
 				location.update_ts = dbResultSet.getTimestamp("update_ts");		
 				location.distance = dbResultSet.getDouble("distance"); 
 				
+				abc = abc + " "  + location.location_name;
+				
 				locations.add(location);
 			}
 			
@@ -203,7 +208,7 @@ public class LocationManager  extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
 				result.setMessage("CheckLocation"
 						, Double.toString(latitude) + Double.toString(longitude)
-						, "Success for location");
+						, "Success for location" + abc);
 				result.object = locations;
 			}
 			else
