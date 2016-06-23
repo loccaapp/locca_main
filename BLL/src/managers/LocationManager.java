@@ -235,4 +235,57 @@ public class LocationManager  extends BaseManager {
 		}		
 	}
 	
+	
+	public OperationResult insertUserLocation(UserLocation userLocation){
+				
+		OperationResult result = new OperationResult();
+		
+		try {
+			dbStatement = (Statement) dbConnection.createStatement();
+			int retVal = dbStatement.executeUpdate("INSERT INTO tp_user_location " 
+					+ "(user_id,location_id,longitude,latitude,create_ts ) " 
+					+ "VALUES "
+					+ " ( "+userLocation.user_id + ","
+						   +userLocation.location_id + ","
+					       +userLocation.longitude + ","
+						   +userLocation.latitude+","
+					       +" now() )");
+			
+			if (retVal>0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("insertUserLocation"
+						, Integer.toString(userLocation.user_id) 
+						, "Success for user_id" );
+				result.object = retVal;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("insertUserLocation"
+						,  Integer.toString(userLocation.user_id) 
+						, "Failure for location");	
+				result.object = retVal;
+			}
+			
+			return result;
+			
+		} catch (SQLException e) {
+			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("insertUserLocation"
+					, Integer.toString(userLocation.user_id) 
+					, e.getMessage());
+			result.object = " ";
+			return result;
+		}
+
+	}	
+	
 }
