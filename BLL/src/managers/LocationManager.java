@@ -24,7 +24,10 @@ public class LocationManager  extends BaseManager {
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
 			
-			dbResultSet = dbStatement.executeQuery("select * from tp_location where location_name like '%"+search_text+"%' ");								
+			dbResultSet = dbStatement.executeQuery("select * from tp_location where "
+					+ " location_name like '%"+search_text+"%' "
+					+ " or district_name like '%"+search_text+"%' "
+				    + " or location_tags like '%"+search_text+"%' ");								
 			
 			ArrayList<Location> locations = new ArrayList<Location>();
 			while(dbResultSet.next()){ 
@@ -235,7 +238,7 @@ public class LocationManager  extends BaseManager {
 		}		
 	}
 	
-	
+	//added by ue 17.06.2016
 	public OperationResult insertUserLocation(UserLocation userLocation){
 				
 		OperationResult result = new OperationResult();
@@ -287,5 +290,62 @@ public class LocationManager  extends BaseManager {
 		}
 
 	}	
+	
+	//added by ue 23.06.2016
+	public OperationResult CheckUserLocation(int user_id, int location_id){
+			
+			OperationResult result = new OperationResult();
+			try {			
+				dbStatement = (Statement) dbConnection.createStatement();
+				
+				dbResultSet = dbStatement.executeQuery("select * from tp_user_location where "
+						+ " location_id = "+ location_id + " "
+						+ " and user_id = " + user_id + " "
+						+ " and create_ts > DATE_SUB(NOW(), INTERVAL 12 HOUR) "
+						+ " order by create_ts desc ");
+				
+				ArrayList<UserLocation> userLocations = new ArrayList<UserLocation>();
+				UserLocation userLocation = new UserLocation();
+				while(dbResultSet.next()){ 
+					
+					userLocation.user_id = dbResultSet.getInt("user_id");
+					userLocation.location_id = dbResultSet.getInt("location_id");
+					userLocation.longitude = dbResultSet.getDouble("longitude");
+					userLocation.latitude = dbResultSet.getDouble("latitude");
+					userLocation.create_ts = dbResultSet.getTimestamp("create_ts");	
+					
+					userLocations.add(userLocation);
+				}
+				
+				if(userLocations.size() > 0)
+				{
+					result.isSuccess = true;
+					result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+					result.reasonCode = OperationCode.ReasonCode.Info_default;
+					result.setMessage("CheckUserLocation", Integer.toString(user_id), "Success for user_id");
+					result.object = userLocations;
+				}
+				else
+				{
+					result.isSuccess = false;
+					result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+					result.setMessage("CheckUserLocation", Integer.toString(user_id) , "Not Found for user_id");	
+					result.object = userLocations;
+				}			
+				
+				return result;
+				
+			} catch (SQLException e) {			
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+				result.returnCode = OperationCode.ReasonCode.Error_Login;
+				result.setMessage("CheckUserLocation", Integer.toString(user_id) , e.getMessage());
+				result.object = " ";
+				return result;
+			}		
+		}
+
+	
 	
 }
