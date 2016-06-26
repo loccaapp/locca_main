@@ -16,6 +16,7 @@ public class GetBestLocsByUserId implements RequestHandler<GetBestLocsByUserIdIn
 
 	@Override
 	public GetBestLocsByUserIdOutDTO handleRequest(GetBestLocsByUserIdInDTO input, Context context) {
+		//uygar trial1
 		int pageingCount = 10;
 		int start = input.page_number * pageingCount;
 
