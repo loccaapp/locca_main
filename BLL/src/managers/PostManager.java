@@ -2,9 +2,11 @@ package managers;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.mysql.jdbc.Statement;
 
+import helper.OperationCode;
 import helper.OperationResult;
 import models.Post;
 
@@ -183,5 +185,129 @@ public class PostManager extends BaseManager {
 		}
 		
 		return result;
+	}
+	
+	public OperationResult getLastLocsByUserId(int user_id, int start, int count){
+		OperationResult result = new OperationResult();
+		String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,tp_post.post_type,tp_post.post_text,tp_post.post_image_id,tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,tp_post.to_twitter,tp_post.to_instagram,tp_post.status_id,tp_post.like_count,tp_post.dislike_count,tp_post.longitude,tp_post.latitude,tp_post.create_ts,tp_post.update_ts,"
+				+ "tp_location.location_id,tp_location.country_id,tp_location.city_id,tp_location.district_name,tp_location.location_name,tp_location.location_brand_name,tp_location.location_type,tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
+				+ "tp_user.user_id,tp_user.username "
+				+"FROM tp_post, tp_location, tp_user "
+				+"WHERE tp_post.user_id = tp_user.user_id "
+				+"and tp_post.location_id = tp_location.location_id "
+				+"and tp_post.user_id = " + user_id
+				+" ORDER BY tp_post.create_ts DESC "
+				+"LIMIT "+start+", "+count+"";
+		
+		try {
+			dbStatement = (Statement)dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery(query);
+			
+			List<Post> userPosts = new ArrayList<Post>();
+			while(dbResultSet.next()){
+				Post post = new Post();
+				post.post_id = dbResultSet.getInt("post_id");
+				post.user_id = dbResultSet.getInt("user_id");
+				post.post_image_id = dbResultSet.getString("post_image_id");
+				post.post_video_id = dbResultSet.getString("post_video_id");
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.latitude = dbResultSet.getDouble("latitude");
+				post.longitude = dbResultSet.getDouble("longitude");
+				post.post_text = dbResultSet.getString("post_text");
+				post.create_ts = dbResultSet.getTimestamp("create_ts");
+				post.update_ts = dbResultSet.getTimestamp("update_ts");
+				post.like_count = dbResultSet.getInt("like_count");
+				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.location_id = dbResultSet.getInt("location_id");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name");
+				post.user.username = dbResultSet.getString("username");
+				userPosts.add(post);
+			}
+			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
+			}
+			
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());
+		}
+		
+		return result;
+		
+	}
+	
+	public OperationResult getBestLocsByUserId(int user_id, int start, int count){
+		OperationResult result = new OperationResult();
+		String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,tp_post.post_type,tp_post.post_text,tp_post.post_image_id,tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,tp_post.to_twitter,tp_post.to_instagram,tp_post.status_id,tp_post.like_count,tp_post.dislike_count,tp_post.longitude,tp_post.latitude,tp_post.create_ts,tp_post.update_ts,"
+				+ "tp_location.location_id,tp_location.country_id,tp_location.city_id,tp_location.district_name,tp_location.location_name,tp_location.location_brand_name,tp_location.location_type,tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
+				+ "tp_user.user_id,tp_user.username "
+				+"FROM tp_post, tp_location, tp_user "
+				+"WHERE tp_post.user_id = tp_user.user_id "
+				+"and tp_post.location_id = tp_location.location_id "
+				+"and tp_post.user_id = " + user_id
+				+" ORDER BY tp_post.like_count DESC "
+				+"LIMIT "+start+", "+count+"";
+		
+		try {
+			dbStatement = (Statement)dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery(query);
+			
+			List<Post> userPosts = new ArrayList<Post>();
+			while(dbResultSet.next()){
+				Post post = new Post();
+				post.post_id = dbResultSet.getInt("post_id");
+				post.user_id = dbResultSet.getInt("user_id");
+				post.post_image_id = dbResultSet.getString("post_image_id");
+				post.post_video_id = dbResultSet.getString("post_video_id");
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.latitude = dbResultSet.getDouble("latitude");
+				post.longitude = dbResultSet.getDouble("longitude");
+				post.post_text = dbResultSet.getString("post_text");
+				post.create_ts = dbResultSet.getTimestamp("create_ts");
+				post.update_ts = dbResultSet.getTimestamp("update_ts");
+				post.like_count = dbResultSet.getInt("like_count");
+				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.location_id = dbResultSet.getInt("location_id");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name");
+				post.user.username = dbResultSet.getString("username");
+				userPosts.add(post);
+			}
+			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
+			}
+			
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());
+		}
+		
+		return result;
+		
 	}
 }

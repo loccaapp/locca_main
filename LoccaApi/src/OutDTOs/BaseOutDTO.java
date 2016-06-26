@@ -1,5 +1,7 @@
 package OutDTOs;
 
+import helper.OperationResult;
+
 public class BaseOutDTO {
 	
 	public boolean isSuccess;
@@ -18,6 +20,13 @@ public class BaseOutDTO {
 		this.returnCode = returnCode;
 		this.reasonCode = reasonCode;
 		this.message = message;
+	}
+	
+	public BaseOutDTO(OperationResult os){
+		isSuccess = os.isSuccess;
+		reasonCode = os.reasonCode;
+		returnCode = os.returnCode;
+		message = os.message;
 	}
 	
 }
