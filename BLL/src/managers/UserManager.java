@@ -9,6 +9,7 @@ import com.mysql.jdbc.Statement;
 import helper.OperationCode;
 import helper.OperationResult;
 import models.User;
+import models.UserLocation;
 
 public class UserManager extends BaseManager {
 
@@ -144,6 +145,79 @@ public class UserManager extends BaseManager {
 			return result;
 		}		
 	}
+	
+	//added by ue 17.06.2016
+	public OperationResult insertUser(User user){
+				
+		OperationResult result = new OperationResult();
+		String sqlStatement = " ";
+		try {
+			dbStatement = (Statement) dbConnection.createStatement();
+			sqlStatement = "INSERT INTO tp_user " 
+					+ " (user_id, username, user_pwd, user_type, user_sub_type, name_first, "
+					+ " name_last, email_address, picture_id, education, gender, motto, birthdate, "
+					+ " phone_country_code, phone_operator_code, phone_num, status_id, "
+					+ " account_try_count, last_activity_ts, create_ts, update_ts) "
+					+ " VALUES "
+					+ " (  NULL,"
+						   +"'"+user.username  + "',"
+						   +"'"+user.user_pwd  + "',"
+						   +"'"+user.user_type + "',"
+						   +"'"+user.user_sub_type + "',"
+						   +"'"+user.name_first + "',"
+						   +"'"+user.name_last + "',"
+						   +"'"+user.email_address + "',"
+						   +"'"+user.picture_id + "',"
+						   +"'"+user.education + "',"
+						   +"'"+user.gender + "',"
+						   +"'"+user.motto + "',"
+						   +"'"+user.birthdate + "',"
+						   +user.phone_country_code + ","
+						   +user.phone_operator_code + ","
+						   +user.phone_num + ","
+					       +"'"+user.status_id + "',"
+					       +user.account_try_count + ","
+					       +" now() ,"
+					       +" now() ,"
+					       +" now() )";
+			int retVal = dbStatement.executeUpdate(sqlStatement);
+			
+			if (retVal>0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("insertUserLocation"
+						, user.username
+						, "Success for user_id" );
+				result.object = retVal;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("insertUserLocation"
+						,  user.username
+						, "Failure for location");	
+				result.object = retVal;
+			}
+			
+			return result;
+			
+		} catch (SQLException e) {
+			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("insertUserLocation"
+					, user.username
+					, e.getMessage() + "***:" + sqlStatement);
+			result.object = " ";
+			return result;
+		}
+
+	}	
 	
 	
 }
