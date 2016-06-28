@@ -238,6 +238,93 @@ public class LocationManager  extends BaseManager {
 		}		
 	}
 	
+	//added by ue 28.06.2016
+	public OperationResult getNearestLocations(Double latitude, Double longitude){
+		
+		OperationResult result = new OperationResult();
+		try {			
+			dbStatement = (Statement) dbConnection.createStatement();
+			
+			dbResultSet = dbStatement.executeQuery("SELECT * FROM "
+							     + "( "
+							     + "SELECT t1.*, "
+								 + "      units * DEGREES( ACOS(  "
+					             + "      COS(RADIANS(latpoint))  "
+					             + "    * COS(RADIANS(latitude))  "
+					             + "    * COS(RADIANS(longpoint) - RADIANS(longitude))  "
+					             + "    + SIN(RADIANS(latpoint))  "
+					             + "    * SIN(RADIANS(latitude)))) AS distance "
+								 + "	   FROM tp_location t1 "
+								 + "	   JOIN ( "
+								 + "	        SELECT " + latitude  + " AS latpoint,   "
+								 + "	               " + longitude + " AS longpoint,  "
+								 + "	               111.045 AS units "
+								 + "	        ) AS t2 ON (1=1) "
+								 + "	) t3 "
+								 + "	order by distance asc ");
+			
+			ArrayList<Location> locations = new ArrayList<Location>();
+			
+			while(dbResultSet.next()){ 
+								
+				Location location = new Location();
+				
+				location.location_id = dbResultSet.getInt("location_id");
+				location.country_id = dbResultSet.getInt("country_id");
+				location.city_id = dbResultSet.getInt("city_id");
+				location.district_name = dbResultSet.getString("district_name");
+				location.location_name = dbResultSet.getString("location_name");
+				location.location_brand_name = dbResultSet.getString("location_brand_name");
+				location.location_type = dbResultSet.getString("location_type");	
+				location.location_sub_type = dbResultSet.getString("location_sub_type");
+				location.longitude = dbResultSet.getDouble("longitude");
+				location.latitude = dbResultSet.getDouble("latitude");
+				location.radius = dbResultSet.getDouble("radius");
+				location.status_id = dbResultSet.getString("status_id");
+				location.location_tags = dbResultSet.getString("location_tags");	
+				location.start_ts = dbResultSet.getTimestamp("start_ts");
+				location.end_ts = dbResultSet.getTimestamp("end_ts");
+				location.create_ts = dbResultSet.getTimestamp("create_ts");
+				location.update_ts = dbResultSet.getTimestamp("update_ts");		
+				location.distance = dbResultSet.getDouble("distance"); 
+				
+				locations.add(location);
+			}
+			
+			if(locations.size() > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("CheckLocation"
+						, Double.toString(latitude) + Double.toString(longitude)
+						, "Success for location" );
+				result.object = locations;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("CheckLocation"
+						, Double.toString(latitude) + Double.toString(longitude)
+						, "Failure for location");	
+				result.object = locations;
+			}						
+			return result;
+			
+		} catch (SQLException e) {			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("CheckLocation"
+					, Double.toString(latitude) + Double.toString(longitude)
+					, e.getMessage());
+			result.object = " ";
+			return result;
+		}		
+	}
+	
 	//added by ue 17.06.2016
 	public OperationResult insertUserLocation(UserLocation userLocation){
 				

@@ -12,27 +12,28 @@ import managers.UserManager;
 import models.*;
 
 //added by ue 01.06.2016
-public class CreateNewUser implements RequestHandler<User, BaseOutDTO> {
+public class CreateNewUser implements RequestHandler<User, UserOutDTO> {
 
     @Override
-    public BaseOutDTO handleRequest(User input, Context context) {
+    public UserOutDTO handleRequest(User input, Context context) {
         context.getLogger().log("Input: " + input);
         
         OperationResult result = new UserManager().insertUser(input);
         
-        int retVal;        
+        User user = new User();    
         if(result.isSuccess == true)
         {
-        	retVal = (int)result.object;        
+        	user.user_id = (int)result.object;        
         }
         else
         {        	
-        	retVal = 0;
+        	user.user_id = -1;
         }        
                                  
-        return new BaseOutDTO(result.isSuccess,
+        return new UserOutDTO(result.isSuccess,
         						  result.returnCode,
             					  result.reasonCode, 
-            					  result.message );          
+            					  result.message,
+            					  user);         
     }
 }

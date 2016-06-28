@@ -6,20 +6,32 @@ import InDTOs.*;
 import OutDTOs.*;
 import helper.OperationResult;
 import managers.UserManager;
+import models.User;
 
-public class LoginUser implements RequestHandler<BaseInDTO, BaseOutDTO> {
+public class LoginUser implements RequestHandler<BaseInDTO, UserOutDTO> {
 
     @Override
-    public BaseOutDTO handleRequest(BaseInDTO input, Context context) {
+    public UserOutDTO handleRequest(BaseInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
         OperationResult result = new UserManager().loginUser(input.username,
         													 input.user_pwd,
-        													 input.email_address);        													                                    
+        													 input.email_address);        													                                            
         
-        return new BaseOutDTO(result.isSuccess, 
-        					  result.returnCode,
-        					  result.reasonCode, 
-        					  result.message);
+        User user;        
+        if(result.isSuccess == true)
+        {
+        	user = (User)result.object;        
+        }
+        else
+        {        	
+        	user = null;
+        }        
+                                 
+        return new UserOutDTO(result.isSuccess,
+        						  result.returnCode,
+            					  result.reasonCode, 
+            					  result.message,
+            					  user); 
     }
 }
