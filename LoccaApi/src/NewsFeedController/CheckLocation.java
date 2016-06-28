@@ -17,7 +17,7 @@ public class CheckLocation implements RequestHandler<CheckLocationInDTO, Locatio
     public LocationOutDTO handleRequest(CheckLocationInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
                 
-        OperationResult result = new LocationManager().CheckLocation(input.latitude
+        OperationResult result = new LocationManager().checkLocation(input.latitude
         															,input.longitude
         															,input.radius);
         

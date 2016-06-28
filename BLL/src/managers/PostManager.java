@@ -21,7 +21,7 @@ public class PostManager extends BaseManager {
 			dbStatement = (Statement) dbConnection.createStatement();
 			int i = dbStatement.executeUpdate("INSERT INTO tp_post "
 					+ "(user_id, location_id, post_type, post_text, like_count, dislike_count,is_replied, to_fb, to_twitter, to_instagram, status_id, create_ts, update_ts)"
-             +" VALUES("+post.user_id+", "+ post.location_id+",'"+post.post_type+"', '"+ post.post_text + "', 0, 0, 'N', 'N', 'N', 'N', 'A',"+post.create_ts+","+post.update_ts+")");
+             +" VALUES("+post.user_id+", "+ post.location_id+",'"+post.post_type+"', '"+ post.post_text + "', 0, 0, 'N', 'N', 'N', 'N', 'A',now(),now())");
 			
 		} catch (SQLException e) {
 			OperationResult result = new OperationResult();

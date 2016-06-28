@@ -27,7 +27,7 @@ public class LocationManager  extends BaseManager {
 			dbResultSet = dbStatement.executeQuery("select * from tp_location where "
 					+ " location_name like '%"+search_text+"%' "
 					+ " or district_name like '%"+search_text+"%' "
-				    + " or location_tags like '%"+search_text+"%' ");								
+				    + " or location_tags like '%"+search_text+"%' order by location_name asc ");								
 			
 			ArrayList<Location> locations = new ArrayList<Location>();
 			while(dbResultSet.next()){ 
@@ -147,7 +147,7 @@ public class LocationManager  extends BaseManager {
 	}
 	
 	//added by ue 07.06.2016
-	public OperationResult CheckLocation(Double latitude, Double longitude, Double radius){
+	public OperationResult checkLocation(Double latitude, Double longitude, Double radius){
 		
 		OperationResult result = new OperationResult();
 		try {			
@@ -379,7 +379,7 @@ public class LocationManager  extends BaseManager {
 	}	
 	
 	//added by ue 23.06.2016
-	public OperationResult CheckUserLocation(int user_id, int location_id){
+	public OperationResult checkUserLocation(int user_id, int location_id){
 			
 			OperationResult result = new OperationResult();
 			try {			
@@ -434,7 +434,7 @@ public class LocationManager  extends BaseManager {
 		}
 
 	//added by ue 23.06.2016
-	public OperationResult GetUserLocation(int user_id){
+	public OperationResult getUserLocation(int user_id){
 			
 			OperationResult result = new OperationResult();
 			try {			

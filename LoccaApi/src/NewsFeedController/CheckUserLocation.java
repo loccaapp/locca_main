@@ -18,7 +18,7 @@ public class CheckUserLocation implements RequestHandler<UserLocationInDTO, User
     public UserLocationOutDTO handleRequest(UserLocationInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
-        OperationResult result = new LocationManager().CheckUserLocation(input.user_id, input.location_id);
+        OperationResult result = new LocationManager().checkUserLocation(input.user_id, input.location_id);
         
         ArrayList<UserLocation> userLocation;
         
