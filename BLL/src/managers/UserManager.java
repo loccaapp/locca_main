@@ -9,8 +9,7 @@ import com.mysql.jdbc.Statement;
 
 import helper.OperationCode;
 import helper.OperationResult;
-import models.User;
-import models.UserLocation;
+import models.*;
 
 public class UserManager extends BaseManager {
 
@@ -277,7 +276,7 @@ public class UserManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("insertUser"
 						,  user.username
-						, "Failure for location" + Integer.toString(retVal) );	
+						, "Failure for location" + Integer.toString(user_id) );	
 				result.object = user_id;
 			}
 			
@@ -297,5 +296,65 @@ public class UserManager extends BaseManager {
 
 	}	
 	
+	//added by ue 29.06.2016
+	public OperationResult insertUserLog(Log log){
+				
+		OperationResult result = new OperationResult();
+		String sqlStatement = " ";
+		try {
+			dbStatement = (Statement) dbConnection.createStatement();
+			sqlStatement = "INSERT INTO tp_log " 
+					+ " (log_id, log_type, user_id, screen_code, log_message, create_ts ) "
+					+ " VALUES "
+					+ " (  NULL,"
+						   +"'" + log.log_type + "',"
+						   +log.user_id + ","
+						   +"'" + log.screen_code + "',"
+						   +"'" + log.log_message + "',"
+						   +"now() )";
+			int retVal = dbStatement.executeUpdate(sqlStatement, Statement.RETURN_GENERATED_KEYS);
+			int log_id = -1;
+			if (retVal>0)
+			{
+				ResultSet rs = dbStatement.getGeneratedKeys();
+				if (rs.next()){
+					log_id =rs.getInt(1);
+				}
+				
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("insertUserLog"
+						, Integer.toString(log.user_id) 
+						, "Success for user_id" + Integer.toString(log_id) );
+				result.object = log_id;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("insertUserLog"
+						,  Integer.toString(log.user_id) 
+						, "Failure for location" + Integer.toString(log_id) );	
+				result.object = log_id;
+			}
+			
+			return result;
+			
+		} catch (SQLException e) {
+			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("insertUserLog"
+					, Integer.toString(log.user_id) 
+					, e.getMessage() + "***:" + sqlStatement);
+			result.object = " ";
+			return result;
+		}
+
+	}	
+
 	
 }
