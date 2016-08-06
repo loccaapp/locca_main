@@ -3,6 +3,7 @@ package managers;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import com.mysql.jdbc.Statement;
@@ -109,7 +110,7 @@ public class UserManager extends BaseManager {
 			dbStatement = (Statement) dbConnection.createStatement();
 			
 			dbResultSet = dbStatement.executeQuery("select user_id, username, user_pwd, user_type, user_sub_type, name_first, name_last, email_address, picture_id, education, gender, motto, birthdate, phone_country_code, phone_operator_code, phone_num, status_id, account_try_count, last_activity_ts, create_ts, update_ts "
-					+ " from tp_user where username = " + username + " ");		
+					+ " from tp_user where username = " + username.trim() + " ");		
 			
 			User user = new User();
 			while(dbResultSet.next()){
@@ -186,8 +187,8 @@ public class UserManager extends BaseManager {
 				user.motto = dbResultSet.getString("motto");	
 				user.birthdate = dbResultSet.getDate("birthdate");
 				user.phone_country_code = dbResultSet.getInt("phone_country_code");
-				user.last_activity_ts = dbResultSet.getTimestamp("last_activity_ts");
-				
+				//user.last_activity_ts = dbResultSet.getTimestamp("last_activity_ts");
+							
 			}		
 
 			if(user.user_id > 0)
@@ -224,60 +225,65 @@ public class UserManager extends BaseManager {
 		OperationResult result = new OperationResult();
 		String sqlStatement = " ";
 		try {
-			dbStatement = (Statement) dbConnection.createStatement();
-			sqlStatement = "INSERT INTO tp_user " 
-					+ " (user_id, username, user_pwd, user_type, user_sub_type, name_first, "
-					+ " name_last, email_address, picture_id, education, gender, motto, birthdate, "
-					+ " phone_country_code, phone_operator_code, phone_num, status_id, "
-					+ " account_try_count, last_activity_ts, create_ts, update_ts) "
-					+ " VALUES "
-					+ " (  NULL,"
-						   +"'"+user.username  + "',"
-						   +"'"+user.user_pwd  + "',"
-						   +"'"+user.user_type + "',"
-						   +"'"+user.user_sub_type + "',"
-						   +"'"+user.name_first + "',"
-						   +"'"+user.name_last + "',"
-						   +"'"+user.email_address + "',"
-						   +"'"+user.picture_id + "',"
-						   +"'"+user.education + "',"
-						   +"'"+user.gender + "',"
-						   +"'"+user.motto + "',"
-						   +"'"+user.birthdate + "',"
-						   +user.phone_country_code + ","
-						   +user.phone_operator_code + ","
-						   +user.phone_num + ","
-					       +"'"+user.status_id + "',"
-					       +user.account_try_count + ","
-					       +" now() ,"
-					       +" now() ,"
-					       +" now() )";
-			int retVal = dbStatement.executeUpdate(sqlStatement, Statement.RETURN_GENERATED_KEYS);
-			int user_id = -1;
-			if (retVal>0)
-			{
-				ResultSet rs = dbStatement.getGeneratedKeys();
-				if (rs.next()){
-				    user_id =rs.getInt(1);
+			OperationResult checkUser = getUserByUserName(user.username);
+			if(checkUser.isSuccess == false && 
+					checkUser.returnCode == OperationCode.ReasonCode.Warning_NotFound) 
+			{		
+				dbStatement = (Statement) dbConnection.createStatement();
+				sqlStatement = "INSERT INTO tp_user " 
+						+ " (user_id, username, user_pwd, user_type, user_sub_type, name_first, "
+						+ " name_last, email_address, picture_id, education, gender, motto, birthdate, "
+						+ " phone_country_code, phone_operator_code, phone_num, status_id, "
+						+ " account_try_count, last_activity_ts, create_ts, update_ts) "
+						+ " VALUES "
+						+ " (  NULL,"
+							   +"'"+user.username  + "',"
+							   +"'"+user.user_pwd  + "',"
+							   +"'"+user.user_type + "',"
+							   +"'"+user.user_sub_type + "',"
+							   +"'"+user.name_first + "',"
+							   +"'"+user.name_last + "',"
+							   +"'"+user.email_address + "',"
+							   +"'"+user.picture_id + "',"
+							   +"'"+user.education + "',"
+							   +"'"+user.gender + "',"
+							   +"'"+user.motto + "',"
+							   +"'"+user.birthdate + "',"
+							   +user.phone_country_code + ","
+							   +user.phone_operator_code + ","
+							   +user.phone_num + ","
+						       +"'"+user.status_id + "',"
+						       +user.account_try_count + ","
+						       +" now() ,"
+						       +" now() ,"
+						       +" now() )";
+				int retVal = dbStatement.executeUpdate(sqlStatement, Statement.RETURN_GENERATED_KEYS);
+				int user_id = -1;
+				if (retVal>0)
+				{
+					ResultSet rs = dbStatement.getGeneratedKeys();
+					if (rs.next()){
+					    user_id =rs.getInt(1);
+					}
+					
+					result.isSuccess = true;
+					result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+					result.reasonCode = OperationCode.ReasonCode.Info_default;
+					result.setMessage("insertUser"
+							, user.username
+							, "Success for user_id" + Integer.toString(user_id) );
+					result.object = user_id;
 				}
-				
-				result.isSuccess = true;
-				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
-				result.reasonCode = OperationCode.ReasonCode.Info_default;
-				result.setMessage("insertUser"
-						, user.username
-						, "Success for user_id" + Integer.toString(user_id) );
-				result.object = user_id;
-			}
-			else
-			{
-				result.isSuccess = false;
-				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
-				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("insertUser"
-						,  user.username
-						, "Failure for location" + Integer.toString(user_id) );	
-				result.object = user_id;
+				else
+				{
+					result.isSuccess = false;
+					result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+					result.setMessage("insertUser"
+							,  user.username
+							, "Failure for location" + Integer.toString(user_id) );	
+					result.object = user_id;
+				}
 			}
 			
 			return result;

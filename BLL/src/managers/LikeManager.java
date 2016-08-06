@@ -35,13 +35,13 @@ public class LikeManager extends BaseManager{
 				result.message = "There are some records";
 				result.object = like;
 			}
+			dbConnection.close();
+			return result;
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
 			return result;
 		}
-		
-		return result;
 	}
 	
 	public OperationResult likeThePost(Like like){

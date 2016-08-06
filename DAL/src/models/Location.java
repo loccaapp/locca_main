@@ -21,7 +21,6 @@ public class Location {
 	public Timestamp end_ts;
 	public Timestamp create_ts;
 	public Timestamp update_ts;
-	
 	public double distance;
 	
 }

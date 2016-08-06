@@ -18,6 +18,7 @@ public class LoginUser implements RequestHandler<BaseInDTO, UserOutDTO> {
         													 input.user_pwd,
         													 input.email_address);        													                                            
         
+        
         User user;        
         if(result.isSuccess == true)
         {

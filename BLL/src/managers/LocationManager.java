@@ -46,10 +46,10 @@ public class LocationManager  extends BaseManager {
 				location.radius = dbResultSet.getDouble("radius");
 				location.status_id = dbResultSet.getString("status_id");
 				location.location_tags = dbResultSet.getString("location_tags");	
-				location.start_ts = dbResultSet.getTimestamp("start_ts");
-				location.end_ts = dbResultSet.getTimestamp("end_ts");
-				location.create_ts = dbResultSet.getTimestamp("create_ts");
-				location.update_ts = dbResultSet.getTimestamp("update_ts");
+				//location.start_ts = dbResultSet.getTimestamp("start_ts");
+				//location.end_ts = dbResultSet.getTimestamp("end_ts");
+				//location.create_ts = dbResultSet.getTimestamp("create_ts");
+				//location.update_ts = dbResultSet.getTimestamp("update_ts");
 				
 				locations.add(location);
 			}
@@ -71,6 +71,7 @@ public class LocationManager  extends BaseManager {
 				result.object = " ";
 			}	
 			
+			dbConnection.close();
 			return result;
 			
 		} catch (SQLException e) {
@@ -193,11 +194,11 @@ public class LocationManager  extends BaseManager {
 				location.radius = dbResultSet.getDouble("radius");
 				location.status_id = dbResultSet.getString("status_id");
 				location.location_tags = dbResultSet.getString("location_tags");	
-				location.start_ts = dbResultSet.getTimestamp("start_ts");
-				location.end_ts = dbResultSet.getTimestamp("end_ts");
-				location.create_ts = dbResultSet.getTimestamp("create_ts");
-				location.update_ts = dbResultSet.getTimestamp("update_ts");		
-				location.distance = dbResultSet.getDouble("distance"); 
+				//location.start_ts = dbResultSet.getTimestamp("start_ts");
+				//location.end_ts = dbResultSet.getTimestamp("end_ts");
+				//location.create_ts = dbResultSet.getTimestamp("create_ts");
+				//location.update_ts = dbResultSet.getTimestamp("update_ts");		
+				//location.distance = dbResultSet.getDouble("distance"); 
 				
 				abc = abc + " "  + location.location_name;
 				
@@ -399,7 +400,7 @@ public class LocationManager  extends BaseManager {
 					userLocation.location_id = dbResultSet.getInt("location_id");
 					userLocation.longitude = dbResultSet.getDouble("longitude");
 					userLocation.latitude = dbResultSet.getDouble("latitude");
-					userLocation.create_ts = dbResultSet.getTimestamp("create_ts");	
+					//userLocation.create_ts = dbResultSet.getTimestamp("create_ts");	
 					
 					userLocations.add(userLocation);
 				}
