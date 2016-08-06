@@ -20,6 +20,8 @@ public class UserManager extends BaseManager {
 			
 	public OperationResult getUsers(){
 		
+		OperationResult result = new OperationResult();
+		
 		try {
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery("SELECT * FROM tp_user");
@@ -32,18 +34,22 @@ public class UserManager extends BaseManager {
 				users.add(user);
 			}
 			
-			OperationResult result = new OperationResult();
 			result.isSuccess = true;
 			result.message = "Success";
-			result.object = users;
-			return result;
+			result.object = users;			
 			
 		} catch (SQLException e) {
-			OperationResult result = new OperationResult();
 			result.isSuccess = false;
-			result.message = e.getMessage();
-			return result;
+			result.message = e.getMessage();			
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 01.06.2016
@@ -90,6 +96,7 @@ public class UserManager extends BaseManager {
 				result.setMessage("getUser", Integer.toString(user_id) , "Failure for user_id");	
 				result.object = user;
 			}
+			dbConnection.close();
 			return result;
 			
 		} catch (SQLException e) {
@@ -98,6 +105,12 @@ public class UserManager extends BaseManager {
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("getUser", Integer.toString(user_id) , e.getMessage());
 			result.object = " ";
+			try {
+				dbConnection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return result;
 		}		
 	}
@@ -146,7 +159,6 @@ public class UserManager extends BaseManager {
 				result.setMessage("getUser", username , "Failure for username");	
 				result.object = user;
 			}
-			return result;
 			
 		} catch (SQLException e) {
 			result.isSuccess = false;
@@ -154,8 +166,15 @@ public class UserManager extends BaseManager {
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("getUser", username , e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 01.06.2016
@@ -207,7 +226,6 @@ public class UserManager extends BaseManager {
 				result.setMessage("loginUser", username , "Failure for user_name");	
 				result.object = user;
 			}
-			return result;
 			
 		} catch (SQLException e) {
 			result.isSuccess = false;
@@ -215,8 +233,15 @@ public class UserManager extends BaseManager {
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("loginUser", username , e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 17.06.2016
@@ -284,10 +309,7 @@ public class UserManager extends BaseManager {
 							, "Failure for location" + Integer.toString(user_id) );	
 					result.object = user_id;
 				}
-			}
-			
-			return result;
-			
+			}		
 		} catch (SQLException e) {
 			
 			result.isSuccess = false;
@@ -297,8 +319,15 @@ public class UserManager extends BaseManager {
 					, user.username
 					, e.getMessage() + "***:" + sqlStatement);
 			result.object = " ";
-			return result;
 		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 
 	}	
 	
@@ -344,9 +373,7 @@ public class UserManager extends BaseManager {
 						,  Integer.toString(log.user_id) 
 						, "Failure for location" + Integer.toString(log_id) );	
 				result.object = log_id;
-			}
-			
-			return result;
+			}		
 			
 		} catch (SQLException e) {
 			
@@ -357,10 +384,16 @@ public class UserManager extends BaseManager {
 					, Integer.toString(log.user_id) 
 					, e.getMessage() + "***:" + sqlStatement);
 			result.object = " ";
-			return result;
 		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 
 	}	
-
 	
 }

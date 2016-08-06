@@ -35,58 +35,86 @@ public class LikeManager extends BaseManager{
 				result.message = "There are some records";
 				result.object = like;
 			}
-			dbConnection.close();
-			return result;
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
-			return result;
 		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	public OperationResult likeThePost(Like like){
+		
 		OperationResult result = new OperationResult();
+		
 		try {
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbStatement.executeUpdate("INSERT INTO tp_like "
 					 +"(post_id, effecter_user_id, user_id, like_dislike_ind, create_ts, update_ts)"
 					+" VALUES ("+like.post_id+", "+like.effecter_user_id+","+like.user_id+",'L', '"+Timef.getDateTime()+"', '"+Timef.getDateTime()+"')");
+			
+			result.isSuccess = true;
+			result.message = "You liked this post";
+		
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
 			return result;
 		}
-		result.isSuccess = true;
-		result.message = "You liked this post";
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
+		
 	}
 	
 	public OperationResult dislikeThePost(Like like){
+		
 		OperationResult result = new OperationResult();
+		
 		try {
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbStatement.executeUpdate("INSERT INTO tp_like "
 					 +"(post_id, effecter_user_id, user_id, like_dislike_ind, create_ts, update_ts)"
 					+" VALUES ("+like.post_id+", "+like.effecter_user_id+","+like.user_id+",'D', '"+Timef.getDateTime()+"', '"+Timef.getDateTime()+"')");
+		
+			result.isSuccess = true;
+			result.message = "You liked this post";
+			
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
-			return result;
 		}
-		result.isSuccess = true;
-		result.message = "You liked this post";
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
 	}
 
 	public OperationResult transLikePost(int user_id, int post_id){
 		// Bu post'a daha önceden like veya dislike atýlmýþsa
 		OperationResult result = getLikeByUserIdAndPostId(user_id, post_id);
+		
 		if(result.object != null){			
 			result.isSuccess = false;
 			result.message = "You already voted it";
 			return result;
 		}
-		//Atýlmamýþsa like/dislike atýlan postu al
+		//Atilmamissa like/dislike atilan postu al
 		PostManager postManager = new PostManager();
 		result = postManager.getLikeAndDislikeCount(post_id);
 		if(!result.isSuccess){
@@ -94,7 +122,7 @@ public class LikeManager extends BaseManager{
 			return result;
 		}
 		Post post = (Post)result.object;
-		//Like sayýsýný arttýr Transaction'ý baþlat
+		//Like sayisini arttir Transaction'i baslat
 		try {
 			dbConnection.setAutoCommit(false);
 		} catch (SQLException e) {
@@ -148,6 +176,12 @@ public class LikeManager extends BaseManager{
 		
 		result.isSuccess = true;
 		result.message = "You liked perfectly";
+		try {
+			dbConnection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 	
@@ -221,6 +255,13 @@ public class LikeManager extends BaseManager{
 		
 		result.isSuccess = true;
 		result.message = "You disliked perfectly";
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return result;
 	}
 }

@@ -136,9 +136,14 @@ public class PostManager extends BaseManager {
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
-			return result;
 		}
 		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
 	}
 	
@@ -181,9 +186,14 @@ public class PostManager extends BaseManager {
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.message = e.getMessage();
-			return result;
 		}
 		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
 	}
 	
@@ -236,17 +246,22 @@ public class PostManager extends BaseManager {
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
-			}
+			}	
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
 			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());
+			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());	
 		}
 		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
-		
 	}
 	
 	public OperationResult getBestLocsByUserId(int user_id, int start, int count){
@@ -307,7 +322,13 @@ public class PostManager extends BaseManager {
 			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());
 		}
 		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		return result;
-		
+
 	}
 }

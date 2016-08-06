@@ -70,18 +70,22 @@ public class LocationManager  extends BaseManager {
 				result.setMessage("getLocations", search_text , "Failure for search_text");	
 				result.object = " ";
 			}	
-			
-			dbConnection.close();
-			return result;
-			
+						
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("getLocations", search_text , e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 07.06.2016
@@ -135,16 +139,21 @@ public class LocationManager  extends BaseManager {
 				result.object = locations;
 			}			
 			
-			return result;
-			
 		} catch (SQLException e) {			
 			result.isSuccess = false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("getLocation", Integer.toString(location_id) , e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 07.06.2016
@@ -225,7 +234,6 @@ public class LocationManager  extends BaseManager {
 						, "Failure for location");	
 				result.object = locations;
 			}						
-			return result;
 			
 		} catch (SQLException e) {			
 			result.isSuccess = false;
@@ -235,8 +243,15 @@ public class LocationManager  extends BaseManager {
 					, Double.toString(latitude) + Double.toString(longitude)
 					, e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 28.06.2016
@@ -312,7 +327,6 @@ public class LocationManager  extends BaseManager {
 						, "Failure for location");	
 				result.object = locations;
 			}						
-			return result;
 			
 		} catch (SQLException e) {			
 			result.isSuccess = false;
@@ -322,8 +336,15 @@ public class LocationManager  extends BaseManager {
 					, Double.toString(latitude) + Double.toString(longitude)
 					, e.getMessage());
 			result.object = " ";
-			return result;
 		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 17.06.2016
@@ -363,7 +384,6 @@ public class LocationManager  extends BaseManager {
 				result.object = retVal;
 			}
 			
-			return result;
 			
 		} catch (SQLException e) {
 			
@@ -374,8 +394,15 @@ public class LocationManager  extends BaseManager {
 					, Integer.toString(userLocation.user_id) 
 					, e.getMessage());
 			result.object = " ";
-			return result;
 		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 
 	}	
 	
@@ -420,9 +447,7 @@ public class LocationManager  extends BaseManager {
 					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 					result.setMessage("CheckUserLocation", Integer.toString(user_id) , "Not Found for user_id");	
 					result.object = userLocations;
-				}			
-				
-				return result;
+				}							
 				
 			} catch (SQLException e) {			
 				result.isSuccess = false;
@@ -430,8 +455,15 @@ public class LocationManager  extends BaseManager {
 				result.returnCode = OperationCode.ReasonCode.Error_Login;
 				result.setMessage("CheckUserLocation", Integer.toString(user_id) , e.getMessage());
 				result.object = " ";
-				return result;
 			}		
+			
+			try {
+				dbConnection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return result;
 		}
 
 	//added by ue 23.06.2016
@@ -474,9 +506,7 @@ public class LocationManager  extends BaseManager {
 					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 					result.setMessage("GetUserLocation", Integer.toString(user_id) , "Not Found for user_id");	
 					result.object = userLocations;
-				}			
-				
-				return result;
+				}							
 				
 			} catch (SQLException e) {			
 				result.isSuccess = false;
@@ -484,10 +514,15 @@ public class LocationManager  extends BaseManager {
 				result.returnCode = OperationCode.ReasonCode.Error_Login;
 				result.setMessage("GetUserLocation", Integer.toString(user_id) , e.getMessage());
 				result.object = " ";
-				return result;
 			}		
+			
+			try {
+				dbConnection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return result;
 		}
 
-	
-	
 }
