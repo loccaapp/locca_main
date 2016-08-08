@@ -123,7 +123,7 @@ public class UserManager extends BaseManager {
 			dbStatement = (Statement) dbConnection.createStatement();
 			
 			dbResultSet = dbStatement.executeQuery("select user_id, username, user_pwd, user_type, user_sub_type, name_first, name_last, email_address, picture_id, education, gender, motto, birthdate, phone_country_code, phone_operator_code, phone_num, status_id, account_try_count, last_activity_ts, create_ts, update_ts "
-					+ " from tp_user where username = " + username.trim() + " ");		
+					+ " from tp_user where username = '" + username.trim() + "' ");		
 			
 			User user = new User();
 			while(dbResultSet.next()){
@@ -168,12 +168,14 @@ public class UserManager extends BaseManager {
 			result.object = " ";
 		}		
 		
+		/*
 		try {
-			dbConnection.close();
+			//dbConnection.close();
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		*/
 		return result;
 	}
 	
@@ -251,8 +253,7 @@ public class UserManager extends BaseManager {
 		String sqlStatement = " ";
 		try {
 			OperationResult checkUser = getUserByUserName(user.username);
-			if(checkUser.isSuccess == false && 
-					checkUser.returnCode == OperationCode.ReasonCode.Warning_NotFound) 
+			if(checkUser.isSuccess == false) 
 			{		
 				dbStatement = (Statement) dbConnection.createStatement();
 				sqlStatement = "INSERT INTO tp_user " 
@@ -296,7 +297,8 @@ public class UserManager extends BaseManager {
 					result.reasonCode = OperationCode.ReasonCode.Info_default;
 					result.setMessage("insertUser"
 							, user.username
-							, "Success for user_id" + Integer.toString(user_id) );
+							, "Success for user_id" + Integer.toString(user_id) +
+							">>" + checkUser.isSuccess + ">username>" + user.username );
 					result.object = user_id;
 				}
 				else
@@ -322,6 +324,7 @@ public class UserManager extends BaseManager {
 		}
 		
 		try {
+			dbConnection.commit();
 			dbConnection.close();
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -395,5 +398,5 @@ public class UserManager extends BaseManager {
 		return result;
 
 	}	
-	
+		
 }

@@ -8,6 +8,7 @@ import com.mysql.jdbc.Statement;
 
 import helper.OperationCode;
 import helper.OperationResult;
+import models.Location;
 import models.Post;
 
 public class PostManager extends BaseManager {
@@ -331,4 +332,71 @@ public class PostManager extends BaseManager {
 		return result;
 
 	}
+
+	//added by ue 08.08.2016
+	public OperationResult searchPostInLocation(int location_id, String search_text, int start, int count){
+		
+		OperationResult result = new OperationResult();
+		try {			
+			dbStatement = (Statement) dbConnection.createStatement();
+			
+			dbResultSet = dbStatement.executeQuery("select * from tp_post, tp_location, tp_user "
+					+ "where "
+					+ "tp_post.location_id = tp_location.location_id and "
+					+ "tp_post.user_id = tp_user.user_id and "
+					+ "tp_post.location_id = " + location_id + " and "
+					+ "tp_post.post_text like '%" + search_text.trim() + "%' "
+					+ "ORDER BY tp_post.create_ts DESC  "
+					+ "LIMIT "+start+","+count+"");
+			
+			ArrayList<Post> posts = new ArrayList<Post>();
+			while(dbResultSet.next()){
+				Post post = new Post();
+				post.post_id = dbResultSet.getInt("post_id");
+				post.user_id = dbResultSet.getInt("user_id");
+				post.post_text = dbResultSet.getString("post_text");
+				post.like_count = dbResultSet.getInt("like_count");
+				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name"); 
+				post.user.username = dbResultSet.getString("username");
+				posts.add(post);
+			}			
+			
+			if(posts.size() > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("searchPostInLocation", Integer.toString(location_id), "Success for location_id");
+				result.object = posts;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("searchPostInLocation", Integer.toString(location_id) , "Failure for location_id");	
+				result.object = posts;
+			}			
+			
+		} catch (SQLException e) {			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("searchPostInLocation", Integer.toString(location_id) , e.getMessage());
+			result.object = " ";
+		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}
+	
+	
+
 }

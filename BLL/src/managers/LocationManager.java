@@ -524,5 +524,5 @@ public class LocationManager  extends BaseManager {
 			}
 			return result;
 		}
-
+	
 }
