@@ -399,4 +399,10 @@ public class UserManager extends BaseManager {
 
 	}	
 		
+	//update user info eklenecek.
+	
+	//make passive user eklenecek.
+	
+	//change password eklenecek.
+	
 }

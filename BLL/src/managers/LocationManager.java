@@ -525,7 +525,7 @@ public class LocationManager  extends BaseManager {
 			return result;
 		}
 	
-	//added by ue 28.06.2016
+	//added by ue 08.08.2016
 	public OperationResult getNearestAndPopularLocations(Double latitude, Double longitude){
 		
 		int cnt1 = 0;
@@ -601,7 +601,7 @@ public class LocationManager  extends BaseManager {
 				location.location_name = dbResultSet.getString("location_name");
 				location.location_brand_name = dbResultSet.getString("location_brand_name");
 				location.location_type = dbResultSet.getString("location_type");	
-				location.location_sub_type = "P"; //nearest location flag
+				location.location_sub_type = "P"; //popular location flag
 				location.longitude = dbResultSet.getDouble("longitude");
 				location.latitude = dbResultSet.getDouble("latitude");
 				location.radius = dbResultSet.getDouble("radius");

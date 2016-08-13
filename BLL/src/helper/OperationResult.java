@@ -23,7 +23,7 @@ public class OperationResult {
 	}
 	
 	public void setMessage(String functionCode, String id, String errorMessage) {
-		this.message = "FunctionCode:" + functionCode + " Id:" + id + " ErrorMessage:" + errorMessage;
+		this.message = "FunctionCode:" + functionCode + " Id:" + id + " Message:" + errorMessage;
 	}
 	
 	public void setObject(Object object) {

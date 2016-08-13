@@ -243,7 +243,7 @@ public class PostManager extends BaseManager {
 				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
 				result.object = userPosts;
 			}else{
-				result.isSuccess = true;
+				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
@@ -310,7 +310,7 @@ public class PostManager extends BaseManager {
 				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
 				result.object = userPosts;
 			}else{
-				result.isSuccess = true;
+				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
@@ -334,6 +334,7 @@ public class PostManager extends BaseManager {
 	}
 
 	//added by ue 08.08.2016
+	//lokasyonun icindeki post'lari search eder
 	public OperationResult searchPostInLocation(int location_id, String search_text, int start, int count){
 		
 		OperationResult result = new OperationResult();
@@ -397,6 +398,160 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 	
-	
+	//added by ue 13.08.2016
+	//bir user'in begendigi loc'lari last'a gore desc siralanacak fonksiyon gerekiyor.
+	public OperationResult getLikedPostsByUserId(int user_id, int start, int count){
+		
+		OperationResult result = new OperationResult();
+		String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
+				+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
+				+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
+				+ "t1.create_ts,t1.update_ts,"
+				+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
+				+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
+				+ "t4.username "
+				+" FROM tp_post t1, tp_like t2, tp_location t3, tp_user t4 "
+				+" WHERE t1.user_id = t2.user_id "
+				+" and t1.post_id = t2.post_id "
+				+" and t1.location_id = t3.location_id "
+				+" and t1.user_id = t4.user_id "
+				+" and t2.effecter_user_id = " + user_id
+				+" ORDER BY t1.create_ts DESC "
+				+" LIMIT "+start+", "+count+"";
+		
+		try {
+			dbStatement = (Statement)dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery(query);
+			
+			List<Post> userPosts = new ArrayList<Post>();
+			while(dbResultSet.next()){
+				Post post = new Post();
+				post.post_id = dbResultSet.getInt("post_id");
+				post.user_id = dbResultSet.getInt("user_id");
+				post.post_image_id = dbResultSet.getString("post_image_id");
+				post.post_video_id = dbResultSet.getString("post_video_id");
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.latitude = dbResultSet.getDouble("latitude");
+				post.longitude = dbResultSet.getDouble("longitude");
+				post.post_text = dbResultSet.getString("post_text");
+				post.create_ts = dbResultSet.getTimestamp("create_ts");
+				post.update_ts = dbResultSet.getTimestamp("update_ts");
+				post.like_count = dbResultSet.getInt("like_count");
+				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.location_id = dbResultSet.getInt("location_id");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name");
+				post.user.username = dbResultSet.getString("username");
+				userPosts.add(post);
+			}
+			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getLikedPostsByUserId", String.valueOf(user_id), "Success for user_id");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getLikedPostsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
+			}
+			
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getLikedPostsByUserId", String.valueOf(user_id), e.getMessage());
+		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}
 
+	//added by ue 13.08.2016
+	//bir user'in begendigi loc'lari last'a gore desc siralanacak fonksiyon gerekiyor.
+	public OperationResult getPopularPostsByTimeInterval(int start, int count){
+		
+		OperationResult result = new OperationResult();
+		String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
+				+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
+				+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
+				+ "t1.create_ts,t1.update_ts,"
+				+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
+				+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
+				+ "t4.username "
+				+" FROM tp_post t1, tp_location t3, tp_user t4 "
+				+" WHERE t1.location_id = t3.location_id "
+				+" and t1.user_id = t4.user_id "
+				+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
+				+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
+				+" LIMIT "+start+", "+count+"";
+		
+		try {
+			dbStatement = (Statement)dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery(query);
+			
+			List<Post> userPosts = new ArrayList<Post>();
+			while(dbResultSet.next()){
+				Post post = new Post();
+				post.post_id = dbResultSet.getInt("post_id");
+				post.user_id = dbResultSet.getInt("user_id");
+				post.post_image_id = dbResultSet.getString("post_image_id");
+				post.post_video_id = dbResultSet.getString("post_video_id");
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.latitude = dbResultSet.getDouble("latitude");
+				post.longitude = dbResultSet.getDouble("longitude");
+				post.post_text = dbResultSet.getString("post_text");
+				post.create_ts = dbResultSet.getTimestamp("create_ts");
+				post.update_ts = dbResultSet.getTimestamp("update_ts");
+				post.like_count = dbResultSet.getInt("like_count");
+				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.location_id = dbResultSet.getInt("location_id");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name");
+				post.user.username = dbResultSet.getString("username");
+				userPosts.add(post);
+			}
+			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getLikedPostsByUserId", " " , "Success for user_id");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getLikedPostsByUserId", " " , "There aren't any recorded posts");
+			}
+			
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getLikedPostsByUserId", " ", e.getMessage());
+		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}
+	
+	//like ve dislike operasyonlari tekrar duzenlenecek.
+	
+	//goruntulenen post'larin istatisigi ile ilgili veriler yeni yaratilacak tp_statistics tablosunda tutulacak.
+	
+	//reply post 
+	
 }
