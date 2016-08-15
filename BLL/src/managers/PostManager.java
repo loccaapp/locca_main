@@ -548,8 +548,60 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 	
-	//like ve dislike operasyonlari tekrar duzenlenecek.
-	
+	//added by ue 13.08.2016
+	//like ve dislike operasyonlari tekrar duzenlendi.
+	public OperationResult setLikeOrDislikeCount(long post_id, String operation_type){
+		
+		//operation_type >> L : for like operation
+		//operation_type >> D : for dislike operation
+		
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			String aa = "uygar";
+			if(operation_type.trim().contains("L"))
+			{
+				effectedRows = dbStatement.executeUpdate("UPDATE tp_post "
+						   + " SET like_count = like_count + 1 "
+						   + " WHERE post_id ="+post_id+"");	
+			}
+			else if(operation_type.trim().contains("D"))
+			{
+				effectedRows = dbStatement.executeUpdate("UPDATE tp_post "
+						   + " SET dislike_count = dislike_count + 1 "
+						   + " WHERE post_id ="+post_id+"");
+			}
+			
+			//effectedRows = dbStatement.getUpdateCount();			
+			//dbConnection.commit();		
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("setLikeOrDislikeCount", String.valueOf(effectedRows) , "Post was updated!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("setLikeOrDislikeCount", String.valueOf(effectedRows) , " Post ID:" +post_id+ "Post was not updated!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("setLikeOrDislikeCount", String.valueOf(effectedRows) , e.getMessage());
+		}
+		
+		return result;
+	}	
 	//goruntulenen post'larin istatisigi ile ilgili veriler yeni yaratilacak tp_statistics tablosunda tutulacak.
 	
 	//reply post 
