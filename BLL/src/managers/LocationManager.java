@@ -686,5 +686,121 @@ public class LocationManager  extends BaseManager {
 		return result;
 	}
 		
+	//added by ue 08.08.2016
+	public OperationResult getActiveAndPopularLocations(int user_id){
+		
+		OperationResult result = new OperationResult();
+		try {			
+			dbStatement = (Statement) dbConnection.createStatement();	
+			
+			ArrayList<Location> locations = new ArrayList<Location>();			
+			
+			dbResultSet = dbStatement.executeQuery("select distinct t3.* from tp_location t3, "
+									 + " ( select t2.location_id, count(*) cnt from " 
+									 + " tp_user_location t1, tp_location t2 "
+									 + " where t1.location_id = t2.location_id " 
+									 + " and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) " 
+									 + " group by t1.location_id ) t4 "
+									 + " where t3.location_id = t4.location_id " 
+									 + " order by cnt desc "
+									 + " limit 4 ");
+			
+			while(dbResultSet.next()){ 
+				
+				Location location = new Location();
+				
+				location.location_id = dbResultSet.getInt("location_id");
+				location.country_id = dbResultSet.getInt("country_id");
+				location.city_id = dbResultSet.getInt("city_id");
+				location.district_name = dbResultSet.getString("district_name");
+				location.location_name = dbResultSet.getString("location_name");
+				location.location_brand_name = dbResultSet.getString("location_brand_name");
+				location.location_type = dbResultSet.getString("location_type");	
+				location.location_sub_type = "P"; //popular location flag
+				location.longitude = dbResultSet.getDouble("longitude");
+				location.latitude = dbResultSet.getDouble("latitude");
+				location.radius = dbResultSet.getDouble("radius");
+				location.status_id = dbResultSet.getString("status_id");
+				location.location_tags = dbResultSet.getString("location_tags");	
+				location.start_ts = dbResultSet.getTimestamp("start_ts");
+				location.end_ts = dbResultSet.getTimestamp("end_ts");
+				location.create_ts = dbResultSet.getTimestamp("create_ts");
+				location.update_ts = dbResultSet.getTimestamp("update_ts"); 
+				
+				locations.add(location);
+			}
+			
+			dbResultSet = dbStatement.executeQuery(" Select distinct t2.* from " 
+					 + " tp_user_location t1, tp_location t2 "
+					 + " where t1.location_id = t2.location_id " 
+					 + " and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
+					 + " and t1.user_id = " + user_id + " limit 4");
+
+			while(dbResultSet.next()){ 
+			
+			Location location = new Location();
+			
+			location.location_id = dbResultSet.getInt("location_id");
+			location.country_id = dbResultSet.getInt("country_id");
+			location.city_id = dbResultSet.getInt("city_id");
+			location.district_name = dbResultSet.getString("district_name");
+			location.location_name = dbResultSet.getString("location_name");
+			location.location_brand_name = dbResultSet.getString("location_brand_name");
+			location.location_type = dbResultSet.getString("location_type");	
+			location.location_sub_type = "A"; //active location flag
+			location.longitude = dbResultSet.getDouble("longitude");
+			location.latitude = dbResultSet.getDouble("latitude");
+			location.radius = dbResultSet.getDouble("radius");
+			location.status_id = dbResultSet.getString("status_id");
+			location.location_tags = dbResultSet.getString("location_tags");	
+			location.start_ts = dbResultSet.getTimestamp("start_ts");
+			location.end_ts = dbResultSet.getTimestamp("end_ts");
+			location.create_ts = dbResultSet.getTimestamp("create_ts");
+			location.update_ts = dbResultSet.getTimestamp("update_ts"); 
+			
+			locations.add(location);
+
+			}
+			
+			if(locations.size() > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getActiveAndPopularLocations"
+						, Integer.toString(user_id) 
+						, "Success for location" );
+				result.object = locations;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getActiveAndPopularLocations"
+						, Integer.toString(user_id) 
+						, "Failure for location");	
+				result.object = locations;
+			}						
+			
+		} catch (SQLException e) {
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("getActiveAndPopularLocations"
+					, Integer.toString(user_id) 
+					, e.getMessage());
+			result.object = " ";
+		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}
+		
 	
 }
