@@ -18,10 +18,13 @@ public class GetLikedPostsByUserId implements RequestHandler<LikedPostInDTO, Pos
     public PostOutDTO handleRequest(LikedPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
                 
+		int pageingCount = 10;		
+		int start = input.page_number * pageingCount;
+		
         OperationResult result = 
         		new PostManager().getLikedPostsByUserId(input.user_id,         	
-								        				input.page_number, 
-								        				input.paging_count);
+        												start, 
+        												pageingCount);
                 		
         ArrayList<Post> posts;
         

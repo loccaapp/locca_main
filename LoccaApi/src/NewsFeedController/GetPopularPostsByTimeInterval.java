@@ -18,9 +18,12 @@ public class GetPopularPostsByTimeInterval implements RequestHandler<PopularPost
     public PostOutDTO handleRequest(PopularPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
+		int pageingCount = 10;		
+		int start = input.page_number * pageingCount;
+		
         OperationResult result = 
-        		new PostManager().getPopularPostsByTimeInterval(input.page_number, 
-								        						input.paging_count);
+        		new PostManager().getPopularPostsByTimeInterval(start, 
+        														pageingCount);
                 		
         ArrayList<Post> posts;
         

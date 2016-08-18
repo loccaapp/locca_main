@@ -4,19 +4,20 @@ import java.util.ArrayList;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import InDTOs.CheckLocationInDTO;
+import InDTOs.*;
 import OutDTOs.*;
 import helper.OperationResult;
 import managers.LocationManager;
 import models.*;
 
-public class GetNearestAndPopularLocations implements RequestHandler<CheckLocationInDTO, LocationOutDTO>  {
+public class GetNearestAndPopularLocations implements RequestHandler<GetNearestAndPopularLocationsInDTO, LocationOutDTO>  {
 
     @Override
-    public LocationOutDTO handleRequest(CheckLocationInDTO input, Context context) {
+    public LocationOutDTO handleRequest(GetNearestAndPopularLocationsInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
-                
-        OperationResult result = new LocationManager().getNearestAndPopularLocations(input.latitude
+        
+        OperationResult result = new LocationManager().getNearestAndPopularLocations(input.user_id
+        																			,input.latitude
         																   			,input.longitude);
         
         ArrayList<Location> locations;
