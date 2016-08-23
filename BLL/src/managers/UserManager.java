@@ -52,6 +52,82 @@ public class UserManager extends BaseManager {
 		return result;
 	}
 	
+	
+	
+	public OperationResult searchUsers(String searchText){
+	
+		OperationResult result = new OperationResult();
+		
+		try {
+			
+			String[] splited = searchText.split("\\s+");
+			String name = " ";
+			String surname = " ";
+			if(splited.length > 0)
+			{
+				name = splited[0].trim();
+			}
+			
+			if(splited.length > 1)
+			{
+				surname = splited[1].trim();
+			}
+			
+			dbStatement = (Statement) dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery("select * "
+												+ " from tp_user "
+												+ " where username like '%" + searchText.trim() + "%' "
+												+ " or name_first like '%" + name + "%' "
+												+ " or name_last like '%" + surname + "%' "
+												+ " order by username "
+												+ " limit 10 ");
+			
+			ArrayList<User> users = new ArrayList<User>();
+			while(dbResultSet.next()){
+				User user = new User();
+				user.user_id = dbResultSet.getInt("user_id");
+				user.username = dbResultSet.getString("username");
+				user.name_first = dbResultSet.getString("name_first");
+				user.name_last = dbResultSet.getString("name_last");
+				users.add(user);
+			}
+			
+			if(users.size() > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("searchUsers", searchText , "Success for searchText");
+				result.object = users;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("searchUsers", "name:"+name + "surname:" +surname+ "--" + searchText , "Failure for searchText");	
+				result.object = users;
+			}
+			dbConnection.close();
+			return result;		
+		} 
+		catch (SQLException e) {
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("searchUsers", searchText , e.getMessage());
+			result.object = " ";
+			try {
+				dbConnection.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return result;		
+		}			
+	}
+
+	
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
 		//comment1
