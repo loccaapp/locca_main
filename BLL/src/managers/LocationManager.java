@@ -212,6 +212,7 @@ public class LocationManager  extends BaseManager {
 				abc = abc + " "  + location.location_name;
 				
 				locations.add(location);
+								
 			}
 			
 			if(locations.size() > 0)
@@ -240,6 +241,113 @@ public class LocationManager  extends BaseManager {
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("CheckLocation"
+					, Double.toString(latitude) + Double.toString(longitude)
+					, e.getMessage());
+			result.object = " ";
+		}		
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}
+	
+	//added by ue 07.06.2016
+	public OperationResult checkAndInsertLocation(int user_id, Double latitude, Double longitude, Double radius){
+		
+		OperationResult result = new OperationResult();
+		try {			
+			dbStatement = (Statement) dbConnection.createStatement();
+			
+			dbResultSet = dbStatement.executeQuery("SELECT * FROM "
+							     + "( "
+							     + "SELECT t1.*, r,"
+								 + "      units * DEGREES( ACOS(  "
+					             + "      COS(RADIANS(latpoint))  "
+					             + "    * COS(RADIANS(latitude))  "
+					             + "    * COS(RADIANS(longpoint) - RADIANS(longitude))  "
+					             + "    + SIN(RADIANS(latpoint))  "
+					             + "    * SIN(RADIANS(latitude)))) AS distance "
+								 + "	   FROM tp_location t1 "
+								 + "	   JOIN ( "
+								 + "	        SELECT " + latitude  + " AS latpoint,   "
+								 + "	               " + longitude + " AS longpoint,  "
+								 + "	               " + radius + " AS r,  "
+								 + "	               111.045 AS units "
+								 + "	        ) AS t2 ON (1=1) "
+								 + "	) t3 "
+								 + "	WHERE radius > distance  "
+								 + "	order by distance asc ");
+			
+			ArrayList<Location> locations = new ArrayList<Location>();
+			
+			String abc = " ";
+			while(dbResultSet.next()){ 
+								
+				Location location = new Location();
+				
+				location.location_id = dbResultSet.getInt("location_id");
+				location.country_id = dbResultSet.getInt("country_id");
+				location.city_id = dbResultSet.getInt("city_id");
+				location.district_name = dbResultSet.getString("district_name");
+				location.location_name = dbResultSet.getString("location_name");
+				location.location_brand_name = dbResultSet.getString("location_brand_name");
+				location.location_type = dbResultSet.getString("location_type");	
+				location.location_sub_type = dbResultSet.getString("location_sub_type");
+				location.longitude = dbResultSet.getDouble("longitude");
+				location.latitude = dbResultSet.getDouble("latitude");
+				location.radius = dbResultSet.getDouble("radius");
+				location.status_id = dbResultSet.getString("status_id");
+				location.location_tags = dbResultSet.getString("location_tags");	
+				//location.start_ts = dbResultSet.getTimestamp("start_ts");
+				//location.end_ts = dbResultSet.getTimestamp("end_ts");
+				//location.create_ts = dbResultSet.getTimestamp("create_ts");
+				//location.update_ts = dbResultSet.getTimestamp("update_ts");		
+				//location.distance = dbResultSet.getDouble("distance"); 
+					
+				locations.add(location);
+				
+				UserLocation userLocation = new UserLocation(user_id, 
+															location.location_id, 
+															longitude, 
+															latitude, 
+															null );
+
+				OperationResult or = insertUserLocation(userLocation);
+								
+			}
+			
+			if(locations.size() > 0)
+			{
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("checkAndInsertLocation"
+						, Double.toString(latitude) + Double.toString(longitude)
+						, "Success for location" + abc);
+				result.object = locations;
+			}
+			else
+			{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("checkAndInsertLocation"
+						, " user_id:" + Integer.toString(user_id) 
+						+ " latitude:" + Double.toString(latitude) 
+						+ " longitude:" + Double.toString(longitude)
+						, "Failure for location");	
+				result.object = locations;
+			}						
+			
+		} catch (SQLException e) {			
+			result.isSuccess = false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
+			result.returnCode = OperationCode.ReasonCode.Error_Login;
+			result.setMessage("checkAndInsertLocation"
 					, Double.toString(latitude) + Double.toString(longitude)
 					, e.getMessage());
 			result.object = " ";
@@ -395,13 +503,14 @@ public class LocationManager  extends BaseManager {
 					, e.getMessage());
 			result.object = " ";
 		}
-		
+		/*
 		try {
 			dbConnection.close();
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		*/
 		return result;
 
 	}	
