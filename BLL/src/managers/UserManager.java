@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 
 import com.mysql.jdbc.Statement;
@@ -51,9 +52,8 @@ public class UserManager extends BaseManager {
 		}
 		return result;
 	}
-	
-	
-	
+			
+	//added by ue 26.08.2016
 	public OperationResult searchUsers(String searchText){
 	
 		OperationResult result = new OperationResult();
@@ -126,7 +126,6 @@ public class UserManager extends BaseManager {
 			return result;		
 		}			
 	}
-
 	
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
@@ -474,8 +473,67 @@ public class UserManager extends BaseManager {
 		return result;
 
 	}	
+	
+	//added by ue 29.08.2016 update user info
+	public OperationResult updateUserInfo(User user){
 		
-	//update user info eklenecek.
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		String sql = " ";
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			sql        = "UPDATE tp_user "
+					   		+ " SET name_first = ? , "
+					   		+ "     name_last = ? , "
+					   		+ "     education = ? , "
+					   		+ "     gender = ? , "
+					   		+ "     motto = ? , "
+					   		+ "     birthdate = ?  "
+					   		+ " WHERE user_id = ? " ;
+						
+			PreparedStatement pst = dbConnection.prepareStatement(sql);
+            pst.setString(1, user.name_first);
+            pst.setString(2, user.name_last);
+            pst.setString(3, user.education);
+            pst.setString(4, user.gender);
+            pst.setString(5, user.motto);
+            pst.setDate(6, user.birthdate);
+            pst.setInt(7, user.user_id);
+            
+            effectedRows = pst.executeUpdate();
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("updateUserInfo", String.valueOf(effectedRows) , "User info was updated!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("updateUserInfo", "sql :" + sql , " Post ID:" +user.user_id+ "User info was not updated!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("updateUserInfo", "sql :" + sql , e.getMessage());
+		}
+		            
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}	
 	
 	//make passive user eklenecek.
 	
