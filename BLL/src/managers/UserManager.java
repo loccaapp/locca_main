@@ -516,7 +516,7 @@ public class UserManager extends BaseManager {
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("updateUserInfo", "sql :" + sql , " Post ID:" +user.user_id+ "User info was not updated!");
+				result.setMessage("updateUserInfo", "sql :" + sql , " User ID:" +user.user_id+ "User info was not updated!");
 			}
 		
 		} catch (SQLException e) {
@@ -535,7 +535,56 @@ public class UserManager extends BaseManager {
 		return result;
 	}	
 	
-	//make passive user eklenecek.
+	//added by ue 29.08.2016 update user status
+	public OperationResult updateUserStatus(User user){
+		
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		String sql = " ";
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			sql        = "UPDATE tp_user "
+					   		+ " SET status_id = ? "
+					   		+ " WHERE user_id = ? " ;
+			
+			PreparedStatement pst = dbConnection.prepareStatement(sql);
+            pst.setString(1, user.status_id);
+            pst.setInt(2, user.user_id);
+            
+            effectedRows = pst.executeUpdate();
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("updateUserStatus", "status_id :" + user.status_id , "User status was updated!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("updateUserStatus", "sql :" + sql , " User ID:" + user.user_id + "User status was not updated!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("updateUserStatus", "sql :" + sql , e.getMessage());
+		}
+		            
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}	
 	
 	//change password eklenecek.
 	
