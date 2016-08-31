@@ -347,8 +347,8 @@ public class PostManager extends BaseManager {
 					+ "tp_post.user_id = tp_user.user_id and "
 					+ "tp_post.location_id = " + location_id + " and "
 					+ "tp_post.post_text like '%" + search_text.trim() + "%' "
-					+ "ORDER BY tp_post.create_ts DESC  "
-					+ "LIMIT "+start+","+count+"");
+					+ "ORDER BY tp_post.create_ts DESC "
+					+ "LIMIT "+start*count+","+count+"");
 			
 			ArrayList<Post> posts = new ArrayList<Post>();
 			while(dbResultSet.next()){
@@ -358,7 +358,7 @@ public class PostManager extends BaseManager {
 				post.post_text = dbResultSet.getString("post_text");
 				post.like_count = dbResultSet.getInt("like_count");
 				post.dislike_count = dbResultSet.getInt("dislike_count");
-				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.district_name = dbResultSet.getString("district_name"); 
 				post.location.location_name = dbResultSet.getString("location_name"); 
 				post.user.username = dbResultSet.getString("username");
 				posts.add(post);
@@ -417,7 +417,7 @@ public class PostManager extends BaseManager {
 				+" and t1.user_id = t4.user_id "
 				+" and t2.effecter_user_id = " + user_id
 				+" ORDER BY t1.create_ts DESC "
-				+" LIMIT "+start+", "+count+"";
+				+" LIMIT "+start*count+", "+count+"";
 		
 		try {
 			dbStatement = (Statement)dbConnection.createStatement();
@@ -491,7 +491,7 @@ public class PostManager extends BaseManager {
 				+" and t1.user_id = t4.user_id "
 				+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
 				+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
-				+" LIMIT "+start+", "+count+"";
+				+" LIMIT "+start*count+", "+count+"";
 		
 		try {
 			dbStatement = (Statement)dbConnection.createStatement();
@@ -621,7 +621,7 @@ public class PostManager extends BaseManager {
 				+" and t1.post_type = 'O' "
 				+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
 				+" ORDER BY t1.create_ts DESC "
-				+" LIMIT "+start+", "+count+"";
+				+" LIMIT "+start*count+", "+count+"";
 		
 		try {
 			dbStatement = (Statement)dbConnection.createStatement();

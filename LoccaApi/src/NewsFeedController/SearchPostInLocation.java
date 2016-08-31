@@ -19,8 +19,8 @@ public class SearchPostInLocation implements RequestHandler<SearchPostInDTO,
 
     @Override
     public PostOutDTO handleRequest(SearchPostInDTO input, Context context) {
-        context.getLogger().log("Input: " + input);
-                
+        context.getLogger().log("Input: " + input);        
+        
         OperationResult result = 
         		new PostManager().searchPostInLocation(input.location_id, 
 								        				input.search_text, 

@@ -17,14 +17,11 @@ public class GetOffersByLocation implements RequestHandler<OffersInDTO, PostOutD
     @Override
     public PostOutDTO handleRequest(OffersInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
-        
-		int pageingCount = 10;		
-		int start = input.page_number * pageingCount;
 		
         OperationResult result = 
         		new PostManager().getOffersByLocation( input.location_id
-        											  ,start
-        											  ,pageingCount);
+        											  ,input.page_number
+        											  ,input.paging_count);
                 		
         ArrayList<Post> posts;
         

@@ -266,6 +266,7 @@ public class LikeManager extends BaseManager{
 		return result;
 	}
 
+	
 	//added by ue 13.08.2016 sadece bu fonksiyon kullanilabilir.
 	public OperationResult likeOrDislikePost(Like like){
 		
@@ -273,31 +274,38 @@ public class LikeManager extends BaseManager{
 		//operation_type >> D : for dislike operation
 		
 		OperationResult result = new OperationResult();
+		LogManager logger =  new LogManager();
+		
 		int effectedRows = 0;
+		String log_msg = " "; 
 		
 		try {
-			
+														
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbConnection.setAutoCommit(false);
 			
-			effectedRows = dbStatement.executeUpdate("INSERT INTO tp_like "
-		 		+" (post_id, effecter_user_id, user_id, like_dislike_ind, create_ts, update_ts)"
-		 		+" VALUES ("+like.post_id+", "+like.effecter_user_id+","+like.user_id+",'"+like.like_dislike_ind+"', now(), now() )");
+			String sql = "INSERT INTO tp_like "
+			 		+" (post_id, effecter_user_id, user_id, like_dislike_ind, create_ts, update_ts)"
+			 		+" VALUES ("+like.post_id+", "+like.effecter_user_id+","+like.user_id+",'"+like.like_dislike_ind+"', now(), now() )";			
+			
+			effectedRows = dbStatement.executeUpdate(sql);
 			
 			if(effectedRows > 0){
-								
+				
 				PostManager postManager = new PostManager();
 				OperationResult result2 = new OperationResult();
 				
-				result2 = postManager.setLikeOrDislikeCount(like.post_id, like.like_dislike_ind);
+				result2 = postManager.setLikeOrDislikeCount(like.post_id, like.like_dislike_ind);				
 				
 				if(result2.isSuccess == true)
-				{				
+				{
 					result.isSuccess = true;
 					result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 					result.reasonCode = OperationCode.ReasonCode.Info_default;
-					result.setMessage("likeOrDislikePost", String.valueOf(effectedRows) , "Like was inserted into tp_like!");
+					result.setMessage("likeOrDislikePost", log_msg + "--" + String.valueOf(effectedRows) , "Like was inserted into tp_like!");
 					result.object = effectedRows;
+					log_msg = logger.createServerLog(dbStatement,"I",like.user_id,
+							"likeOrDislikePost1",result2.message );
 					dbConnection.commit();
 				}
 				else
@@ -307,6 +315,10 @@ public class LikeManager extends BaseManager{
 					result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 					result.setMessage("postManager.setLikeOrDislikeCount", String.valueOf(effectedRows) , result2.message);
+					
+					log_msg = logger.createServerLog(dbStatement,"I",like.user_id,
+							"likeOrDislikePost2",result2.message );
+					dbConnection.commit();
 				}
 				
 			}else{
@@ -315,13 +327,17 @@ public class LikeManager extends BaseManager{
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("likeOrDislikePost", String.valueOf(effectedRows) , "Like was not inserted into tp_like!");
+				log_msg = logger.createServerLog(dbStatement,"I",like.user_id,
+						"likeOrDislikePost3",String.valueOf(effectedRows) );
 			}
 		
 		} catch (SQLException e) {
 			result.isSuccess= false;
 			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("likeOrDislikePost", String.valueOf(effectedRows) , e.getMessage());
+			result.setMessage("likeOrDislikePost", String.valueOf(effectedRows) , e.getMessage());			
+			log_msg = logger.createServerLog(dbStatement,"I",like.user_id,
+					"likeOrDislikePost4",e.getMessage() );
 		}
 		
 		try {
@@ -332,5 +348,5 @@ public class LikeManager extends BaseManager{
 		}
 		return result;
 		
-	}	
+	}
 }
