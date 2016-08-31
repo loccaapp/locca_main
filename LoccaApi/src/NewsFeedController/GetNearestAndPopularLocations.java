@@ -16,9 +16,10 @@ public class GetNearestAndPopularLocations implements RequestHandler<GetNearestA
     public LocationOutDTO handleRequest(GetNearestAndPopularLocationsInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
-        OperationResult result = new LocationManager().getNearestAndPopularLocations(input.user_id
-        																			,input.latitude
-        																   			,input.longitude);
+        OperationResult result = 
+        		new LocationManager().getNearestAndPopularLocations(input.user_id
+        														   ,input.latitude
+        														   ,input.longitude);
         
         ArrayList<Location> locations;
         

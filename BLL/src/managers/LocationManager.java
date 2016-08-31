@@ -658,7 +658,7 @@ public class LocationManager  extends BaseManager {
 								 + "	        ) AS t2 ON (1=1) "
 								 + "	) t3 "
 								 + "	order by distance asc "
-								 + "    limit 4 ");
+								 + "    limit 5 ");
 			
 			ArrayList<Location> locations = new ArrayList<Location>();
 			
@@ -696,7 +696,7 @@ public class LocationManager  extends BaseManager {
 									 + " group by t1.location_id ) t4 "
 									 + " where t3.location_id = t4.location_id " 
 									 + " order by cnt desc "
-									 + " limit 4 ");
+									 + " limit 5 ");
 			
 			while(dbResultSet.next()){ 
 				
@@ -727,7 +727,9 @@ public class LocationManager  extends BaseManager {
 					 + " tp_user_location t1, tp_location t2 "
 					 + " where t1.location_id = t2.location_id " 
 					 + " and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
-					 + " and t1.user_id = " + user_id + " limit 4");
+					 + " and t1.user_id = " + user_id 
+					 + " order by t1.create_ts desc "
+					 + " limit 5");
 
 			while(dbResultSet.next()){ 
 			
@@ -812,7 +814,7 @@ public class LocationManager  extends BaseManager {
 									 + " group by t1.location_id ) t4 "
 									 + " where t3.location_id = t4.location_id " 
 									 + " order by cnt desc "
-									 + " limit 4 ");
+									 + " limit 5 ");
 			
 			while(dbResultSet.next()){ 
 				
@@ -843,7 +845,9 @@ public class LocationManager  extends BaseManager {
 					 + " tp_user_location t1, tp_location t2 "
 					 + " where t1.location_id = t2.location_id " 
 					 + " and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
-					 + " and t1.user_id = " + user_id + " limit 4");
+					 + " and t1.user_id = " + user_id 
+					 + " order by t1.create_ts desc "
+					 + " limit 5");
 
 			while(dbResultSet.next()){ 
 			

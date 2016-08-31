@@ -16,7 +16,8 @@ public class GetActiveAndPopularLocations implements RequestHandler<BaseInDTO, L
     public LocationOutDTO handleRequest(BaseInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
-        OperationResult result = new LocationManager().getActiveAndPopularLocations(input.user_id);
+        OperationResult result = 
+        		new LocationManager().getActiveAndPopularLocations(input.user_id);
         
         ArrayList<Location> locations;
         
