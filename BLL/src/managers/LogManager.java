@@ -25,7 +25,7 @@ public class LogManager {
 			effectedRows = st.executeUpdate(sql);			
 			return_msg = "True! InsertedLogCnt : " + String.valueOf(effectedRows);
 		} catch (SQLException e) {
-			return_msg = sql + "**" + e.getMessage();
+			return_msg = sql + " ** " + e.getMessage();
 		}
 		
 		return return_msg;

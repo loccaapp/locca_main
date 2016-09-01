@@ -7,6 +7,8 @@ public class UserLocation {
 
 	public int user_id ;
 	public int location_id ;
+	public String location_name ;
+	public String district_name ;
 	public double longitude	;
 	public double latitude ;
 	public Timestamp create_ts ;

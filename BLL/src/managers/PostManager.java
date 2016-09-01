@@ -677,8 +677,7 @@ public class PostManager extends BaseManager {
 		}
 		return result;
 	}
-	
-	
+		
 	//goruntulenen post'larin istatisigi ile ilgili veriler yeni yaratilacak tp_statistics tablosunda tutulacak.
 	
 	//reply post 

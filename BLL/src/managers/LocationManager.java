@@ -11,7 +11,7 @@ import helper.OperationCode;
 import helper.OperationResult;
 import models.*;
 
-public class LocationManager  extends BaseManager {
+public class LocationManager extends BaseManager {
 
 	public LocationManager(){
 		super();
@@ -522,10 +522,10 @@ public class LocationManager  extends BaseManager {
 			try {			
 				dbStatement = (Statement) dbConnection.createStatement();
 				
-				dbResultSet = dbStatement.executeQuery("select * from tp_user_location where "
-						+ " location_id = "+ location_id + " "
+				dbResultSet = dbStatement.executeQuery("select * from tp_user_location "
+						+ " where location_id = "+ location_id + " "
 						+ " and user_id = " + user_id + " "
-						+ " and create_ts > DATE_SUB(NOW(), INTERVAL 36 HOUR) "
+						+ " and create_ts > DATE_SUB(NOW(), INTERVAL 90 HOUR) "
 						+ " order by create_ts desc ");
 				
 				ArrayList<UserLocation> userLocations = new ArrayList<UserLocation>();
@@ -582,17 +582,25 @@ public class LocationManager  extends BaseManager {
 			try {			
 				dbStatement = (Statement) dbConnection.createStatement();
 				
-				dbResultSet = dbStatement.executeQuery("select * from tp_user_location where " 
-						+ "     user_id = " + user_id + " "
-						+ " and create_ts > DATE_SUB(NOW(), INTERVAL 36 HOUR) "
-						+ " order by create_ts desc ");
+				dbResultSet = dbStatement.executeQuery("select * from "
+						+ " tp_user_location t1, "
+						+ " tp_location t2 "
+						+ " where t1.location_id = t2.location_id "
+						+ " and t1.user_id = " + user_id + " "
+						+ " and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
+						+ " order by t1.create_ts desc "
+						+ " limit 1 "); 
 				
 				ArrayList<UserLocation> userLocations = new ArrayList<UserLocation>();
-				UserLocation userLocation = new UserLocation();
+				
 				while(dbResultSet.next()){ 
+					
+					UserLocation userLocation = new UserLocation();
 					
 					userLocation.user_id = dbResultSet.getInt("user_id");
 					userLocation.location_id = dbResultSet.getInt("location_id");
+					userLocation.location_name = dbResultSet.getString("location_name");
+					userLocation.district_name = dbResultSet.getString("district_name");								
 					userLocation.longitude = dbResultSet.getDouble("longitude");
 					userLocation.latitude = dbResultSet.getDouble("latitude");
 					userLocation.create_ts = dbResultSet.getTimestamp("create_ts");	
