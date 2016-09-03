@@ -198,19 +198,32 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 	
+	//reorganized by ue 03.09.2016
 	public OperationResult getLastLocsByUserId(int user_id, int start, int count){
+		
 		OperationResult result = new OperationResult();
-		String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,tp_post.post_type,tp_post.post_text,tp_post.post_image_id,tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,tp_post.to_twitter,tp_post.to_instagram,tp_post.status_id,tp_post.like_count,tp_post.dislike_count,tp_post.longitude,tp_post.latitude,tp_post.create_ts,tp_post.update_ts,"
-				+ "tp_location.location_id,tp_location.country_id,tp_location.city_id,tp_location.district_name,tp_location.location_name,tp_location.location_brand_name,tp_location.location_type,tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
-				+ "tp_user.user_id,tp_user.username "
-				+"FROM tp_post, tp_location, tp_user "
-				+"WHERE tp_post.user_id = tp_user.user_id "
-				+"and tp_post.location_id = tp_location.location_id "
-				+"and tp_post.user_id = " + user_id
-				+" ORDER BY tp_post.create_ts DESC "
-				+"LIMIT "+start+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,"
+					+ " tp_post.post_type,tp_post.post_text,tp_post.post_image_id,"
+					+ " tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,tp_post.to_twitter,"
+					+ " tp_post.to_instagram,tp_post.status_id,tp_post.like_count,"
+					+ " tp_post.dislike_count,tp_post.longitude,tp_post.latitude,tp_post.create_ts,"
+					+ " tp_post.update_ts,"
+					+ " tp_location.location_id,tp_location.country_id,tp_location.city_id,"
+					+ " tp_location.district_name,tp_location.location_name,"
+					+ " tp_location.location_brand_name,tp_location.location_type,"
+					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
+					+ " tp_user.user_id,tp_user.username "
+					+"FROM tp_post, tp_location, tp_user "
+					+"WHERE tp_post.user_id = tp_user.user_id "
+					+"and tp_post.location_id = tp_location.location_id "
+					+"and tp_post.user_id = " + user_id
+					+" ORDER BY tp_post.create_ts DESC "
+					+"LIMIT "+start*count+", "+count+"";			
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
@@ -240,20 +253,22 @@ public class PostManager extends BaseManager {
 				result.isSuccess = true;
 				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
-				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
+				result.setMessage("getLastLocsByUserId", String.valueOf(user_id), "Success for user_id");
 				result.object = userPosts;
 			}else{
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
+				result.setMessage("getLastLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
 			}	
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());	
+			result.setMessage("getLastLocsByUserId", String.valueOf(user_id), e.getMessage());	
+			
+			logger.createServerError(dbStatement, "E" , "1", user_id, " ", result.message);
 		}
 		
 		try {
@@ -265,23 +280,37 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 	
+	//reorganized by ue 03.09.2016
 	public OperationResult getBestLocsByUserId(int user_id, int start, int count){
+		
 		OperationResult result = new OperationResult();
-		String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,tp_post.post_type,tp_post.post_text,tp_post.post_image_id,tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,tp_post.to_twitter,tp_post.to_instagram,tp_post.status_id,tp_post.like_count,tp_post.dislike_count,tp_post.longitude,tp_post.latitude,tp_post.create_ts,tp_post.update_ts,"
-				+ "tp_location.location_id,tp_location.country_id,tp_location.city_id,tp_location.district_name,tp_location.location_name,tp_location.location_brand_name,tp_location.location_type,tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
-				+ "tp_user.user_id,tp_user.username "
-				+"FROM tp_post, tp_location, tp_user "
-				+"WHERE tp_post.user_id = tp_user.user_id "
-				+"and tp_post.location_id = tp_location.location_id "
-				+"and tp_post.user_id = " + user_id
-				+" ORDER BY tp_post.like_count DESC "
-				+"LIMIT "+start+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT tp_post.post_id,tp_post.user_id,tp_post.location_id,"
+					+ " tp_post.post_type,tp_post.post_text,tp_post.post_image_id,"
+					+ " tp_post.post_video_id,tp_post.is_replied,tp_post.to_fb,"
+					+ " tp_post.to_twitter,tp_post.to_instagram,tp_post.status_id,"
+					+ " tp_post.like_count,tp_post.dislike_count,tp_post.longitude,"
+					+ " tp_post.latitude,tp_post.create_ts,tp_post.update_ts,"
+					+ " tp_location.location_id,tp_location.country_id,tp_location.city_id,"
+					+ " tp_location.district_name,tp_location.location_name,"
+					+ " tp_location.location_brand_name,tp_location.location_type,"
+					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
+					+ " tp_user.user_id,tp_user.username "
+					+"FROM tp_post, tp_location, tp_user "
+					+"WHERE tp_post.user_id = tp_user.user_id "
+					+"and tp_post.location_id = tp_location.location_id "
+					+"and tp_post.user_id = " + user_id
+					+" ORDER BY tp_post.like_count DESC "
+					+"LIMIT "+start*count+", "+count+"";
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
 			List<Post> userPosts = new ArrayList<Post>();
+			
 			while(dbResultSet.next()){
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
@@ -307,20 +336,22 @@ public class PostManager extends BaseManager {
 				result.isSuccess = true;
 				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
-				result.setMessage("getLocsByUserId", String.valueOf(user_id), "Success for user_id");
+				result.setMessage("getBestLocsByUserId", String.valueOf(user_id), "Success for user_id");
 				result.object = userPosts;
 			}else{
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("getLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
+				result.setMessage("getBestLocsByUserId", String.valueOf(user_id), "There aren't any recorded posts");
 			}
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("getLocsByUserId", String.valueOf(user_id), e.getMessage());
+			result.setMessage("getBestLocsByUserId", String.valueOf(user_id), e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", user_id, " ", result.message);
 		}
 		
 		try {
@@ -338,6 +369,8 @@ public class PostManager extends BaseManager {
 	public OperationResult searchPostInLocation(int location_id, String search_text, int start, int count){
 		
 		OperationResult result = new OperationResult();
+		LogManager logger =  new LogManager();
+		
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
 			
@@ -377,16 +410,16 @@ public class PostManager extends BaseManager {
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("searchPostInLocation", Integer.toString(location_id) , "Failure for location_id");	
-				result.object = posts;
+				result.setMessage("searchPostInLocation", Integer.toString(location_id) , "Failure for location_id");					
 			}			
 			
 		} catch (SQLException e) {			
 			result.isSuccess = false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
-			result.setMessage("searchPostInLocation", Integer.toString(location_id) , e.getMessage());
-			result.object = " ";
+			result.setMessage("searchPostInLocation", Integer.toString(location_id) + search_text , e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);
 		}		
 		
 		try {
@@ -403,23 +436,26 @@ public class PostManager extends BaseManager {
 	public OperationResult getLikedPostsByUserId(int user_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
-		String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
-				+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
-				+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
-				+ "t1.create_ts,t1.update_ts,"
-				+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
-				+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
-				+ "t4.username "
-				+" FROM tp_post t1, tp_like t2, tp_location t3, tp_user t4 "
-				+" WHERE t1.user_id = t2.user_id "
-				+" and t1.post_id = t2.post_id "
-				+" and t1.location_id = t3.location_id "
-				+" and t1.user_id = t4.user_id "
-				+" and t2.effecter_user_id = " + user_id
-				+" ORDER BY t1.create_ts DESC "
-				+" LIMIT "+start*count+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
+					+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
+					+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
+					+ "t1.create_ts,t1.update_ts,"
+					+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
+					+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
+					+ "t4.username "
+					+" FROM tp_post t1, tp_like t2, tp_location t3, tp_user t4 "
+					+" WHERE t1.user_id = t2.user_id "
+					+" and t1.post_id = t2.post_id "
+					+" and t1.location_id = t3.location_id "
+					+" and t1.user_id = t4.user_id "
+					+" and t2.effecter_user_id = " + user_id
+					+" ORDER BY t1.create_ts DESC "
+					+" LIMIT "+start*count+", "+count+"";
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
@@ -460,9 +496,11 @@ public class PostManager extends BaseManager {
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("getLikedPostsByUserId", String.valueOf(user_id), e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", user_id, " ", result.message);
 		}
 		
 		try {
@@ -479,21 +517,24 @@ public class PostManager extends BaseManager {
 	public OperationResult getPopularPostsByTimeInterval(int start, int count){
 		
 		OperationResult result = new OperationResult();
-		String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
-				+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
-				+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
-				+ "t1.create_ts,t1.update_ts,"
-				+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
-				+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
-				+ "t4.username "
-				+" FROM tp_post t1, tp_location t3, tp_user t4 "
-				+" WHERE t1.location_id = t3.location_id "
-				+" and t1.user_id = t4.user_id "
-				+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
-				+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
-				+" LIMIT "+start*count+", "+count+"";
+		LogManager logger =  new LogManager();		
 		
-		try {
+		try {	
+			
+			String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
+					+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
+					+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
+					+ "t1.create_ts,t1.update_ts,"
+					+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
+					+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
+					+ "t4.username "
+					+" FROM tp_post t1, tp_location t3, tp_user t4 "
+					+" WHERE t1.location_id = t3.location_id "
+					+" and t1.user_id = t4.user_id "
+					+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
+					+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
+					+" LIMIT "+start*count+", "+count+"";
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
@@ -534,9 +575,11 @@ public class PostManager extends BaseManager {
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("getLikedPostsByUserId", " ", e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);
 		}
 		
 		try {
@@ -556,6 +599,7 @@ public class PostManager extends BaseManager {
 		//operation_type >> D : for dislike operation
 		
 		OperationResult result = new OperationResult();
+		LogManager logger =  new LogManager();		
 		int effectedRows = 0;
 		
 		try {
@@ -595,9 +639,11 @@ public class PostManager extends BaseManager {
 		
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("setLikeOrDislikeCount", String.valueOf(effectedRows) , e.getMessage());
+			result.setMessage("setLikeOrDislikeCount", String.valueOf(post_id) , e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);	
 		}
 		
 		return result;
@@ -607,28 +653,33 @@ public class PostManager extends BaseManager {
 	public OperationResult getOffersByLocation(int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
-		String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
-				+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
-				+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
-				+ "t1.create_ts,t1.update_ts,"
-				+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
-				+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
-				+ "t4.username "
-				+" FROM tp_post t1, tp_location t3, tp_user t4 "
-				+" WHERE t1.location_id = t3.location_id "
-				+" and t1.user_id = t4.user_id "
-				+" and t1.location_id = " + location_id
-				+" and t1.post_type = 'O' "
-				+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
-				+" ORDER BY t1.create_ts DESC "
-				+" LIMIT "+start*count+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
+					+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
+					+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
+					+ "t1.create_ts,t1.update_ts,"
+					+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
+					+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
+					+ "t4.username "
+					+" FROM tp_post t1, tp_location t3, tp_user t4 "
+					+" WHERE t1.location_id = t3.location_id "
+					+" and t1.user_id = t4.user_id "
+					+" and t1.location_id = " + location_id
+					+" and t1.post_type = 'O' "
+					+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
+					+" ORDER BY t1.create_ts DESC "
+					+" LIMIT "+start*count+", "+count+"";
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
 			List<Post> userPosts = new ArrayList<Post>();
+			
 			while(dbResultSet.next()){
+				
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
 				post.user_id = dbResultSet.getInt("user_id");
@@ -664,9 +715,11 @@ public class PostManager extends BaseManager {
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
-			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("getOffersByLocation", " ", e.getMessage());
+			result.setMessage("getOffersByLocation", Integer.toString(location_id) , e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);		
 		}
 		
 		try {

@@ -20,10 +20,9 @@ public class GetLastPostsByLocation implements RequestHandler<GetLastPostsByLoca
 	public GetLastPostsByLocationOutDTO handleRequest(GetLastPostsByLocationInDTO input, Context context) {
 
 		GetLastPostsByLocationOutDTO dto = new GetLastPostsByLocationOutDTO();
-		int pageingCount = 10;		
-		int start = input.page_number * pageingCount;
+
 		OperationResult result = new PostManager()
-				.getLastPostsByLocation(input.location_id, start, pageingCount);
+				.getLastPostsByLocation(input.location_id, input.page_number, 10);
 		
 		if(!result.isSuccess){
 			dto.isSuccess = false;

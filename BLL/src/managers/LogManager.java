@@ -10,7 +10,7 @@ public class LogManager {
 			String log_type, 
 			int user_id, 
 			String screen_code, 
-			String log_message)
+			String log_message) 
 	{ 
 		int effectedRows = 0;
 		String return_msg = " ";
@@ -23,12 +23,38 @@ public class LogManager {
 		
 		try {
 			effectedRows = st.executeUpdate(sql);			
-			return_msg = "True! InsertedLogCnt : " + String.valueOf(effectedRows);
+			return_msg = "Log was created!" + Integer.toString(effectedRows);
 		} catch (SQLException e) {
 			return_msg = sql + " ** " + e.getMessage();
 		}
 		
 		return return_msg;
 	}	
+	
+	public String createServerError(Statement st, 
+			String error_type, 
+			String error_severity,
+			int user_id, 
+			String screen_code, 
+			String error_message)
+	{ 
+		int effectedRows = 0;
+		String return_msg = " ";
+		error_message = error_message.replace("'", " ");
+		
+		String sql = "INSERT INTO tp_error "
+		+ " (error_type, error_severity, user_id, screen_code, error_message, create_ts) "
+		+ " VALUES "
+		+ " ('" +error_type+ "',"+error_severity+","+user_id+",'"+screen_code+"','"+error_message+"',now())";
+		
+		try {
+			effectedRows = st.executeUpdate(sql);			
+			return_msg = "Error was created!" + Integer.toString(effectedRows);
+		} catch (SQLException e) {
+			return_msg = sql + " ** " + e.getMessage();
+		}
+		
+		return return_msg;
+	}
 	
 }

@@ -358,8 +358,10 @@ public class UserManager extends BaseManager {
 						       +" now() ,"
 						       +" now() ,"
 						       +" now() )";
+				
 				int retVal = dbStatement.executeUpdate(sqlStatement, Statement.RETURN_GENERATED_KEYS);
 				int user_id = -1;
+				
 				if (retVal>0)
 				{
 					ResultSet rs = dbStatement.getGeneratedKeys();
