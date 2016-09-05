@@ -101,18 +101,23 @@ public class PostManager extends BaseManager {
 	public OperationResult getBestPostsByLocation(int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
-		String query = "SELECT * FROM tp_post, tp_location, tp_user WHERE "
-				+ "tp_post.location_id = tp_location.location_id and "
-				+ "tp_post.user_id = tp_user.user_id and "
-				+ "tp_post.location_id = "+location_id +"  "
-				+ "ORDER BY tp_post.like_count DESC  "
-				+ "LIMIT "+start+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT * "
+					+ " FROM tp_post, tp_location, tp_user "
+					+ " WHERE "
+					+ " tp_post.location_id = tp_location.location_id and "
+					+ " tp_post.user_id = tp_user.user_id and "
+					+ " tp_post.location_id = "+location_id +"  "
+					+ " ORDER BY tp_post.like_count DESC "
+					+ " LIMIT "+start*count+", "+count+" ";
+			
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
 			
-			ArrayList<Post> posts = new ArrayList<Post>();
+			ArrayList<Post> userPosts = new ArrayList<Post>();
 			while(dbResultSet.next()){
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
@@ -126,17 +131,29 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name"); 
 				post.user.username = dbResultSet.getString("username");
-				posts.add(post);
-			}
+				userPosts.add(post);
+			}			
 			
-			result.isSuccess = true;
-			result.object = posts;
-			result.message = "Yey " + posts.size();
-
-			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getBestPostsByLocation", String.valueOf(location_id), "Success best post list for this location");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getBestPostsByLocation", String.valueOf(location_id), "There aren't any posts in this location");
+			}	
+						
 		} catch (SQLException e) {
-			result.isSuccess = false;
-			result.message = e.getMessage();
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getBestPostsByLocation", String.valueOf(location_id), e.getMessage());	
+			
+			logger.createServerError(dbStatement, "E" , "1", location_id, " ", result.message);
 		}
 		
 		try {
@@ -151,18 +168,23 @@ public class PostManager extends BaseManager {
 	public OperationResult getLastPostsByLocation(int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
-		String query = "SELECT * FROM tp_post, tp_location, tp_user WHERE "
-				+ "tp_post.location_id = tp_location.location_id and "
-				+ "tp_post.user_id = tp_user.user_id and "
-				+ "tp_post.location_id = "+location_id +"  "
-				+ "ORDER BY tp_post.update_ts DESC  "
-				+ "LIMIT "+start+", "+count+"";
+		LogManager logger =  new LogManager();
 		
 		try {
+			
+			String query = "SELECT * "
+					+ " FROM tp_post, tp_location, tp_user "
+					+ " WHERE "
+					+ " tp_post.location_id = tp_location.location_id and "
+					+ " tp_post.user_id = tp_user.user_id and "
+					+ " tp_post.location_id = "+location_id +"  "
+					+ " ORDER BY tp_post.update_ts DESC  "
+					+ " LIMIT "+start*count+", "+count+"";
+			
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
 			
-			ArrayList<Post> posts = new ArrayList<Post>();
+			ArrayList<Post> userPosts = new ArrayList<Post>();
 			while(dbResultSet.next()){
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
@@ -173,20 +195,33 @@ public class PostManager extends BaseManager {
 				//post.post_type = dbResultSet.getString("post_type").charAt(0);
 				post.like_count = dbResultSet.getInt("like_count");
 				post.dislike_count = dbResultSet.getInt("dislike_count");
+				post.location.location_id = dbResultSet.getInt("location_id");
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
-				posts.add(post);
+				userPosts.add(post);
 			}
 			
-			result.isSuccess = true;
-			result.object = posts;
-			result.message = "Yey " + posts.size();
-
-			
+			if(userPosts.size() > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("getLastPostsByLocation", String.valueOf(location_id), "Success last posts list for this location");
+				result.object = userPosts;
+			}else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("getLastPostsByLocation", String.valueOf(location_id), "There aren't any posts in this location");
+			}	
+						
 		} catch (SQLException e) {
-			result.isSuccess = false;
-			result.message = e.getMessage();
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("getLastPostsByLocation", String.valueOf(location_id), e.getMessage());	
+			
+			logger.createServerError(dbStatement, "E" , "1", location_id, " ", result.message);
 		}
 		
 		try {
