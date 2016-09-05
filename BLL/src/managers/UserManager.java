@@ -587,7 +587,113 @@ public class UserManager extends BaseManager {
 		}
 		return result;
 	}	
-	
-	//change password eklenecek.
+		
+	//added by ue 29.08.2016 update user updateUserEmailAndPhone
+	public OperationResult updateUserEmailAndPhone(User user){
+		
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		String sql = " ";
+				
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			sql        = "UPDATE tp_user "
+					   		+ " SET email_address = ? ,"
+					   		+ "     phone_country_code = ? ,"
+					   		+ "     phone_operator_code = ? ,"
+					   		+ "     phone_num = ? "
+					   		+ " WHERE user_id = ? " ;
+			
+			PreparedStatement pst = dbConnection.prepareStatement(sql);
+            pst.setString(1, user.email_address);
+            pst.setInt(2, user.phone_country_code);
+            pst.setInt(3, user.phone_operator_code);
+            pst.setInt(4, user.phone_num);
+            pst.setInt(5, user.user_id);
+            
+            effectedRows = pst.executeUpdate();
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("updateUserEmailAndPhone", " User ID:" + user.user_id , "User email and phone was updated!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("updateUserEmailAndPhone", "sql :" + sql , " User ID:" + user.user_id + "User email or phone was not updated!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("updateUserEmailAndPhone", "sql :" + sql , e.getMessage());
+		}
+		            
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}		
+		
+	//added by ue 29.08.2016 update user updateUserEmailAndPhone
+	public OperationResult changeUserPassword(User user){
+		
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		String sql = " ";
+				
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			sql        = "UPDATE tp_user "
+					   		+ " SET user_pwd = ? "
+					   		+ " WHERE user_id = ? " ;
+			
+			PreparedStatement pst = dbConnection.prepareStatement(sql);
+            pst.setString(1, user.user_pwd);
+            pst.setInt(2, user.user_id);
+            
+            effectedRows = pst.executeUpdate();
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("changeUserPassword", " User ID:" + user.user_id , "User password was updated!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("changeUserPassword", "sql :" + sql , " User ID:" + user.user_id + "User password was not updated!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("changeUserPassword", "sql :" + sql , e.getMessage());
+		}
+		            
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}		
 	
 }
