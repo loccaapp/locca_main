@@ -20,7 +20,8 @@ public class GetPopularPostsByTimeInterval implements RequestHandler<PopularPost
 		
         OperationResult result = 
         		new PostManager().getPopularPostsByTimeInterval(input.page_number, 
-        														input.paging_count);
+        														input.paging_count,
+        														input.time_interval );
         
         ArrayList<Post> posts;
         

@@ -549,12 +549,34 @@ public class PostManager extends BaseManager {
 
 	//added by ue 13.08.2016
 	//bir user'in begendigi loc'lari last'a gore desc siralanacak fonksiyon gerekiyor.
-	public OperationResult getPopularPostsByTimeInterval(int start, int count){
+	public OperationResult getPopularPostsByTimeInterval(int start, int count, int time_interval){
 		
 		OperationResult result = new OperationResult();
 		LogManager logger =  new LogManager();		
+		String time_interval_value = " ";		
 		
 		try {	
+			
+			if(time_interval==4)
+			{
+				time_interval_value = "INTERVAL 120 DAY";
+			}
+			else if(time_interval==3)
+			{
+				time_interval_value = "INTERVAL 30 DAY";			
+			}
+			else if(time_interval==2)
+			{
+				time_interval_value = "INTERVAL 7 DAY";			
+			}
+			else if(time_interval==1)
+			{
+				time_interval_value = "INTERVAL 24 HOUR";			
+			}
+			else 
+			{
+				time_interval_value = "INTERVAL 24 HOUR";			
+			}
 			
 			String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
 					+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
@@ -566,7 +588,7 @@ public class PostManager extends BaseManager {
 					+" FROM tp_post t1, tp_location t3, tp_user t4 "
 					+" WHERE t1.location_id = t3.location_id "
 					+" and t1.user_id = t4.user_id "
-					+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 90 DAY) "
+					+" and t1.create_ts > DATE_SUB(NOW(), " +time_interval_value+ ") "
 					+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
 					+" LIMIT "+start*count+", "+count+"";
 			
