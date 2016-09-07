@@ -129,13 +129,18 @@ public class UserManager extends BaseManager {
 	
 	//added by ue 01.06.2016
 	public OperationResult getUser(int user_id){
-		//comment1
+
 		OperationResult result = new OperationResult();
 		try {			
 			dbStatement = (Statement) dbConnection.createStatement();
 			
-			dbResultSet = dbStatement.executeQuery("select user_id, username, user_pwd, user_type, user_sub_type, name_first, name_last, email_address, picture_id, education, gender, motto, birthdate, phone_country_code, phone_operator_code, phone_num, status_id, account_try_count, last_activity_ts, create_ts, update_ts "
-					+ " from tp_user where user_id = " + user_id + " ");		
+			dbResultSet = dbStatement.executeQuery("select user_id, username, user_pwd, "
+					+ " user_type, user_sub_type, name_first, name_last, email_address, "
+					+ " picture_id, education, gender, motto, birthdate, phone_country_code, "
+					+ " phone_operator_code, phone_num, status_id, account_try_count, "
+					+ " last_activity_ts, create_ts, update_ts "
+					+ " from tp_user "
+					+ " where user_id = " + user_id + " ");		
 			
 			User user = new User();
 			while(dbResultSet.next()){
@@ -153,6 +158,10 @@ public class UserManager extends BaseManager {
 				user.motto = dbResultSet.getString("motto");	
 				user.birthdate = dbResultSet.getDate("birthdate");
 				user.phone_country_code = dbResultSet.getInt("phone_country_code");
+				user.phone_operator_code = dbResultSet.getInt("phone_operator_code");
+				user.phone_num = dbResultSet.getInt("phone_num");
+				user.status_id = dbResultSet.getString("status_id");
+				user.account_try_count = dbResultSet.getInt("account_try_count");				
 			}
 			
 			if(user.user_id > 0)
@@ -170,24 +179,22 @@ public class UserManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("getUser", Integer.toString(user_id) , "Failure for user_id");	
 				result.object = user;
-			}
-			dbConnection.close();
-			return result;
-			
+			}			
 		} catch (SQLException e) {
 			result.isSuccess = false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
 			result.returnCode = OperationCode.ReasonCode.Error_Login;
 			result.setMessage("getUser", Integer.toString(user_id) , e.getMessage());
 			result.object = " ";
-			try {
-				dbConnection.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			return result;
-		}		
+		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
 	}
 	
 	//added by ue 01.06.2016

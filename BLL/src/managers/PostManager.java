@@ -1,5 +1,7 @@
 package managers;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,8 @@ import com.mysql.jdbc.Statement;
 import helper.OperationCode;
 import helper.OperationResult;
 import models.Location;
+import models.Log;
+import models.Message;
 import models.Post;
 
 public class PostManager extends BaseManager {
@@ -36,6 +40,75 @@ public class PostManager extends BaseManager {
 		result.message = "Your post sent";		
 		return result;	
 	}
+	
+	//added by ue 29.08.2016 send Message
+	public OperationResult sendPost(Post post){
+		
+		OperationResult result = new OperationResult();
+		int effectedRows = 0;
+		String sql = " ";
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			sql = "INSERT INTO tp_post "
+					+ " (post_id, user_id, location_id, post_type, post_text, "
+					+ " post_image_id, post_video_id, is_replied, to_fb, "
+					+ " to_twitter, to_instagram, status_id, like_count, "
+					+ " dislike_count, longitude, latitude, create_ts, update_ts) "
+					+ " VALUES "
+					+ " (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now(),now())";			
+			
+			PreparedStatement pst = dbConnection.prepareStatement(sql);
+            pst.setLong(1, post.user_id);
+            pst.setInt(2, post.location_id);
+            pst.setString(3, String.valueOf(post.post_type));
+            pst.setString(4, post.post_text);
+            pst.setString(5, post.post_image_id);
+            pst.setString(6, post.post_video_id);
+            pst.setString(7, post.is_replied);
+            pst.setString(8, post.to_fb);
+            pst.setString(9, post.to_twitter);
+            pst.setString(10, post.to_instagram);
+            pst.setString(11, post.status_id);
+            pst.setInt(12, 0); //like_count
+            pst.setInt(13, 0); //dislike_count
+            pst.setDouble(14, post.longitude);
+            pst.setDouble(15, post.latitude);
+            
+            effectedRows = pst.executeUpdate();
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("sendPost", " " , "Post was sent!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("sendPost", "sql :" + sql , 
+						"user_id :" + post.user_id + "Post was not sent!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("sendPost", "sql :" + sql , e.getMessage());
+		}
+		            
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return result;
+	}			
 	
 	public OperationResult getLikeAndDislikeCount(int post_id){
 		OperationResult result = new OperationResult();
@@ -82,6 +155,7 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 
+	
 	public OperationResult setDislikeCount(int post_id, int count){
 		OperationResult result = new OperationResult();
 		try {
@@ -98,6 +172,9 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 
+	//reorganized by ue 05.09.2016
+	
+	//reorganized by ue 05.09.2016
 	public OperationResult getBestPostsByLocation(int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
@@ -165,6 +242,7 @@ public class PostManager extends BaseManager {
 		return result;
 	}
 	
+	//reorganized by ue 05.09.2016
 	public OperationResult getLastPostsByLocation(int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
@@ -401,6 +479,8 @@ public class PostManager extends BaseManager {
 
 	//added by ue 08.08.2016
 	//lokasyonun icindeki post'lari search eder
+	
+	//added by ue 13.08.2016
 	public OperationResult searchPostInLocation(int location_id, String search_text, int start, int count){
 		
 		OperationResult result = new OperationResult();
@@ -549,6 +629,8 @@ public class PostManager extends BaseManager {
 
 	//added by ue 13.08.2016
 	//bir user'in begendigi loc'lari last'a gore desc siralanacak fonksiyon gerekiyor.
+	
+	//added by ue 13.08.2016
 	public OperationResult getPopularPostsByTimeInterval(int start, int count, int time_interval){
 		
 		OperationResult result = new OperationResult();
