@@ -11,11 +11,11 @@ import helper.OperationResult;
 import managers.PostManager;
 import models.*;
 
-public class GetOffersByLocation implements RequestHandler<OffersInDTO, PostOutDTO>  
+public class GetOffersByLocation implements RequestHandler<UserPostInDTO, PostOutDTO>  
 {
 
     @Override
-    public PostOutDTO handleRequest(OffersInDTO input, Context context) {
+    public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
 		
         OperationResult result = 

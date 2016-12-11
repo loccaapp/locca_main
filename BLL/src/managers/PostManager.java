@@ -208,6 +208,10 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name"); 
 				post.user.username = dbResultSet.getString("username");
+				post.post_image_id = dbResultSet.getString("post_image_id");  
+				post.post_video_id = dbResultSet.getString("post_video_id"); 
+				post.user.picture_id = dbResultSet.getString("picture_id"); 
+				post.is_replied = dbResultSet.getString("is_replied"); 
 				userPosts.add(post);
 			}			
 			
@@ -267,7 +271,7 @@ public class PostManager extends BaseManager {
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
 				post.user_id = dbResultSet.getInt("user_id");
-				post.post_text = dbResultSet.getString("post_text");
+				post.post_text = dbResultSet.getString("post_text");				
 				post.create_ts = dbResultSet.getTimestamp("create_ts");
 				post.update_ts = dbResultSet.getTimestamp("update_ts");
 				//post.post_type = dbResultSet.getString("post_type").charAt(0);
@@ -277,6 +281,10 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
+				post.post_image_id = dbResultSet.getString("post_image_id");  
+				post.post_video_id = dbResultSet.getString("post_video_id"); 
+				post.user.picture_id = dbResultSet.getString("picture_id"); 
+				post.is_replied = dbResultSet.getString("is_replied"); 
 				userPosts.add(post);
 			}
 			
@@ -329,7 +337,7 @@ public class PostManager extends BaseManager {
 					+ " tp_location.district_name,tp_location.location_name,"
 					+ " tp_location.location_brand_name,tp_location.location_type,"
 					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
-					+ " tp_user.user_id,tp_user.username "
+					+ " tp_user.user_id,tp_user.username, tp_user.picture_id "
 					+"FROM tp_post, tp_location, tp_user "
 					+"WHERE tp_post.user_id = tp_user.user_id "
 					+"and tp_post.location_id = tp_location.location_id "
@@ -359,6 +367,7 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
+				post.user.picture_id = dbResultSet.getString("picture_id");
 				userPosts.add(post);
 			}
 			
@@ -411,7 +420,7 @@ public class PostManager extends BaseManager {
 					+ " tp_location.district_name,tp_location.location_name,"
 					+ " tp_location.location_brand_name,tp_location.location_type,"
 					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
-					+ " tp_user.user_id,tp_user.username "
+					+ " tp_user.user_id,tp_user.username, tp_user.picture_id "
 					+"FROM tp_post, tp_location, tp_user "
 					+"WHERE tp_post.user_id = tp_user.user_id "
 					+"and tp_post.location_id = tp_location.location_id "
@@ -442,6 +451,7 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
+				post.user.picture_id = dbResultSet.getString("picture_id");
 				userPosts.add(post);
 			}
 			
@@ -561,7 +571,7 @@ public class PostManager extends BaseManager {
 					+ "t1.create_ts,t1.update_ts,"
 					+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
 					+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
-					+ "t4.username "
+					+ "t4.username, t4.picture_id  "
 					+" FROM tp_post t1, tp_like t2, tp_location t3, tp_user t4 "
 					+" WHERE t1.user_id = t2.user_id "
 					+" and t1.post_id = t2.post_id "
@@ -593,6 +603,8 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
+				post.user.picture_id = dbResultSet.getString("picture_id");
+				
 				userPosts.add(post);
 			}
 			
@@ -666,7 +678,7 @@ public class PostManager extends BaseManager {
 					+ "t1.create_ts,t1.update_ts,"
 					+ "t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name,"
 					+ "t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts,"
-					+ "t4.username "
+					+ "t4.username, t4.picture_id "
 					+" FROM tp_post t1, tp_location t3, tp_user t4 "
 					+" WHERE t1.location_id = t3.location_id "
 					+" and t1.user_id = t4.user_id "
@@ -696,6 +708,7 @@ public class PostManager extends BaseManager {
 				post.location.district_name = dbResultSet.getString("district_name");
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
+				post.user.picture_id = dbResultSet.getString("picture_id");
 				userPosts.add(post);
 			}
 			
@@ -703,20 +716,20 @@ public class PostManager extends BaseManager {
 				result.isSuccess = true;
 				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
-				result.setMessage("getLikedPostsByUserId", " " , "Success for user_id");
+				result.setMessage("getPopularPostsByTimeInterval", " " , "Success for user_id");
 				result.object = userPosts;
 			}else{
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("getLikedPostsByUserId", " " , "There aren't any recorded posts");
+				result.setMessage("getPopularPostsByTimeInterval", " " , "There aren't any recorded posts");
 			}
 			
 		} catch (SQLException e) {
 			result.isSuccess= false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("getLikedPostsByUserId", " ", e.getMessage());
+			result.setMessage("getPopularPostsByTimeInterval", " ", e.getMessage());
 			
 			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);
 		}

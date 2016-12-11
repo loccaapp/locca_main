@@ -15,7 +15,7 @@ public class GetUserLocation implements RequestHandler<UserInDTO, UserLocationOu
 
     @Override
     public UserLocationOutDTO handleRequest(UserInDTO input, Context context) {
-        context.getLogger().log("Input: " + input);
+        context.getLogger().log("Input: " + input);             
         
         OperationResult result = new LocationManager().getUserLocation(input.user_id);
         

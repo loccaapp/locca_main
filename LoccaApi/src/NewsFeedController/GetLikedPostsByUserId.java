@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import InDTOs.LikedPostInDTO;
+import InDTOs.*;
 import OutDTOs.*;
 import helper.OperationResult;
 import managers.PostManager;
 import models.*;
 
-public class GetLikedPostsByUserId implements RequestHandler<LikedPostInDTO, PostOutDTO>  
+public class GetLikedPostsByUserId implements RequestHandler<UserPostInDTO, PostOutDTO>  
 {
 
     @Override
-    public PostOutDTO handleRequest(LikedPostInDTO input, Context context) {
+    public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);                
 		
         OperationResult result = 

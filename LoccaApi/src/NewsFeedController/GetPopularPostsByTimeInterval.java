@@ -11,11 +11,11 @@ import helper.OperationResult;
 import managers.PostManager;
 import models.*;
 
-public class GetPopularPostsByTimeInterval implements RequestHandler<PopularPostInDTO, PostOutDTO>  
+public class GetPopularPostsByTimeInterval implements RequestHandler<UserPostInDTO, PostOutDTO>  
 {
 
     @Override
-    public PostOutDTO handleRequest(PopularPostInDTO input, Context context) {
+    public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);        
 		
         OperationResult result = 

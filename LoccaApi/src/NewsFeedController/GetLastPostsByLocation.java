@@ -5,23 +5,38 @@ import java.util.ArrayList;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import InDTOs.GetBestPostsByLocationInDTO;
-import InDTOs.GetLastPostsByLocationInDTO;
+import InDTOs.*;
 import Items.PostItem;
-import OutDTOs.GetBestPostsByLocationOutDTO;
-import OutDTOs.GetLastPostsByLocationOutDTO;
+import OutDTOs.*;
 import helper.OperationResult;
 import managers.PostManager;
 import models.Post;
 
-public class GetLastPostsByLocation implements RequestHandler<GetLastPostsByLocationInDTO, GetLastPostsByLocationOutDTO>{
+public class GetLastPostsByLocation implements RequestHandler<UserPostInDTO, PostOutDTO>{
 
 	@Override
-	public GetLastPostsByLocationOutDTO handleRequest(GetLastPostsByLocationInDTO input, Context context) {
+	public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
 
 		OperationResult result = new PostManager()
 				.getLastPostsByLocation(input.location_id, input.page_number, 10);
 		
+		ArrayList<Post> posts;
+        if(result.isSuccess==true) 
+        { 
+        	posts = (ArrayList<Post>)result.object;   
+        }
+        else
+        {        	
+        	posts = null;
+        }     
+        
+        return new PostOutDTO(result.isSuccess,
+        						  result.returnCode,
+            					  result.reasonCode, 
+            					  result.message,
+            					  posts);
+		
+		/*
         ArrayList<Post> posts;
         ArrayList<PostItem> postItems = null;
         
@@ -53,5 +68,7 @@ public class GetLastPostsByLocation implements RequestHandler<GetLastPostsByLoca
             					  result.reasonCode, 
             					  result.message,
             					  postItems);	
+        */
+       
 	}
 }

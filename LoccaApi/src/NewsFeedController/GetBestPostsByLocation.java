@@ -5,22 +5,38 @@ import java.util.ArrayList;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import InDTOs.GetBestPostsByLocationInDTO;
+import InDTOs.*;
 import Items.PostItem;
-import OutDTOs.GetBestPostsByLocationOutDTO;
-import OutDTOs.PostOutDTO;
+import OutDTOs.*;
 import helper.OperationResult;
 import managers.PostManager;
 import models.Post;
 
-public class GetBestPostsByLocation implements RequestHandler<GetBestPostsByLocationInDTO, GetBestPostsByLocationOutDTO>{
+public class GetBestPostsByLocation implements RequestHandler<UserPostInDTO, PostOutDTO>{
 
 	@Override
-	public GetBestPostsByLocationOutDTO handleRequest(GetBestPostsByLocationInDTO input, Context context) {
+	public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
 
 		OperationResult result = new PostManager()
 				.getBestPostsByLocation(input.location_id, input.page_number, 10);
-				
+		
+		ArrayList<Post> posts;
+        if(result.isSuccess==true) 
+        { 
+        	posts = (ArrayList<Post>)result.object;   
+        }
+        else
+        {        	
+        	posts = null;
+        }     
+        
+        return new PostOutDTO(result.isSuccess,
+        						  result.returnCode,
+            					  result.reasonCode, 
+            					  result.message,
+            					  posts);
+		
+		/*
         ArrayList<Post> posts;
         ArrayList<PostItem> postItems = null;
         
@@ -52,7 +68,7 @@ public class GetBestPostsByLocation implements RequestHandler<GetBestPostsByLoca
             					  result.reasonCode, 
             					  result.message,
             					  postItems);
-        
+        */
 	}
 
 }

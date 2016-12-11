@@ -102,8 +102,10 @@ public class MessageManager extends BaseManager {
 								+ " from  tp_message t1, tp_user t2, tp_user t3 "
 								+ " where t1.from_user_id = t2.user_id "
 								+ " and t1.to_user_id = t3.user_id "
-								+ " and t1.from_user_id = " + message.from_user_id
-								+ " and t1.to_user_id = " + message.to_user_id + " "
+								+ " and ((t1.from_user_id = " + message.from_user_id
+								+ " and t1.to_user_id = " + message.to_user_id + ")"
+								+ " or (t1.from_user_id = " + message.to_user_id 
+								+ " and t1.to_user_id = " + message.from_user_id + "))"
 								+ " order by t1.created_ts desc "); 
 				
 				ArrayList<UserMessage> userMessages = new ArrayList<UserMessage>();
