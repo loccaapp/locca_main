@@ -18,7 +18,7 @@ public class GetLastPostsByLocation implements RequestHandler<UserPostInDTO, Pos
 	public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
 
 		OperationResult result = new PostManager()
-				.getLastPostsByLocation(input.location_id, input.page_number, 10);
+				.getLastPostsByLocation(input.user_id, input.location_id, input.page_number, 10);
 		
 		ArrayList<Post> posts;
         if(result.isSuccess==true) 

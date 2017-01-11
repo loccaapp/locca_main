@@ -175,13 +175,14 @@ public class PostManager extends BaseManager {
 	//reorganized by ue 05.09.2016
 	
 	//reorganized by ue 05.09.2016
-	public OperationResult getBestPostsByLocation(int location_id, int start, int count){
+	public OperationResult getBestPostsByLocation(int user_id, int location_id, int start, int count){
+		/*sadece select edilecek kolonlar secilecek ve belirli bir time araliginda best secilecek*/ 
 		
 		OperationResult result = new OperationResult();
 		LogManager logger =  new LogManager();
 		
 		try {
-			
+			/*
 			String query = "SELECT * "
 					+ " FROM tp_post, tp_location, tp_user "
 					+ " WHERE "
@@ -190,6 +191,16 @@ public class PostManager extends BaseManager {
 					+ " tp_post.location_id = "+location_id +"  "
 					+ " ORDER BY tp_post.like_count DESC "
 					+ " LIMIT "+start*count+", "+count+" ";
+			*/
+			
+			String query = "SELECT * "
+					+ " FROM tp_post join tp_location on (tp_post.location_id = tp_location.location_id) "
+						+ " join tp_user on (tp_post.user_id = tp_user.user_id) "
+			            + " left join tp_like on (tp_post.post_id = tp_like.post_id "
+			            + "                   and tp_like.effecter_user_id = " + user_id + " ) " 
+			+ " WHERE tp_post.location_id = "+location_id +" " 
+			+ " ORDER BY tp_post.like_count DESC "
+			+ " LIMIT "+start*count+", "+count+"";
 			
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
@@ -212,6 +223,7 @@ public class PostManager extends BaseManager {
 				post.post_video_id = dbResultSet.getString("post_video_id"); 
 				post.user.picture_id = dbResultSet.getString("picture_id"); 
 				post.is_replied = dbResultSet.getString("is_replied"); 
+				post.like_dislike_ind = dbResultSet.getString("like_dislike_ind");
 				userPosts.add(post);
 			}			
 			
@@ -247,13 +259,13 @@ public class PostManager extends BaseManager {
 	}
 	
 	//reorganized by ue 05.09.2016
-	public OperationResult getLastPostsByLocation(int location_id, int start, int count){
+	public OperationResult getLastPostsByLocation(int user_id, int location_id, int start, int count){
 		
 		OperationResult result = new OperationResult();
 		LogManager logger =  new LogManager();
 		
 		try {
-			
+			/*
 			String query = "SELECT * "
 					+ " FROM tp_post, tp_location, tp_user "
 					+ " WHERE "
@@ -262,7 +274,17 @@ public class PostManager extends BaseManager {
 					+ " tp_post.location_id = "+location_id +"  "
 					+ " ORDER BY tp_post.update_ts DESC  "
 					+ " LIMIT "+start*count+", "+count+"";
+			*/
 			
+			String query = "SELECT * "
+					+ " FROM tp_post join tp_location on (tp_post.location_id = tp_location.location_id) "
+						+ " join tp_user on (tp_post.user_id = tp_user.user_id) "
+			            + " left join tp_like on (tp_post.post_id = tp_like.post_id "
+			            + "                   and tp_like.effecter_user_id = " + user_id + " ) " 
+			+ " WHERE tp_post.location_id = "+location_id +" " 
+			+ " ORDER BY tp_post.update_ts DESC "
+			+ " LIMIT "+start*count+", "+count+"";
+								
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
 			
@@ -284,7 +306,8 @@ public class PostManager extends BaseManager {
 				post.post_image_id = dbResultSet.getString("post_image_id");  
 				post.post_video_id = dbResultSet.getString("post_video_id"); 
 				post.user.picture_id = dbResultSet.getString("picture_id"); 
-				post.is_replied = dbResultSet.getString("is_replied"); 
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.like_dislike_ind = dbResultSet.getString("like_dislike_ind");
 				userPosts.add(post);
 			}
 			

@@ -18,7 +18,7 @@ public class GetBestPostsByLocation implements RequestHandler<UserPostInDTO, Pos
 	public PostOutDTO handleRequest(UserPostInDTO input, Context context) {
 
 		OperationResult result = new PostManager()
-				.getBestPostsByLocation(input.location_id, input.page_number, 10);
+				.getBestPostsByLocation(input.user_id, input.location_id, input.page_number, 10);
 		
 		ArrayList<Post> posts;
         if(result.isSuccess==true) 

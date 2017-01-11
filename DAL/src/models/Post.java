@@ -22,6 +22,7 @@ public class Post {
 	public double latitude;
 	public Timestamp create_ts;
 	public Timestamp update_ts;
+	public String like_dislike_ind;
 	public Location location;
 	public User user;
 	

@@ -307,7 +307,7 @@ public class LocationManager extends BaseManager {
 				//location.create_ts = dbResultSet.getTimestamp("create_ts");
 				//location.update_ts = dbResultSet.getTimestamp("update_ts");		
 				//location.distance = dbResultSet.getDouble("distance"); 
-					
+				
 				locations.add(location);
 				
 				UserLocation userLocation = new UserLocation(user_id, 
@@ -670,9 +670,37 @@ public class LocationManager extends BaseManager {
 			
 			ArrayList<Location> locations = new ArrayList<Location>();
 			
+			//sadece en yakin lokasyon Inside olarak isaretlenir.
+			boolean insideControl = true;
+			
 			while(dbResultSet.next()){ 
 								
 				Location location = new Location();
+				
+				if(dbResultSet.getDouble("radius") > dbResultSet.getDouble("distance") && insideControl)
+				{
+					insideControl = false;
+					Location locationIn = new Location();
+					locationIn.location_id = dbResultSet.getInt("location_id");
+					locationIn.country_id = dbResultSet.getInt("country_id");
+					locationIn.city_id = dbResultSet.getInt("city_id");
+					locationIn.district_name = dbResultSet.getString("district_name");
+					locationIn.location_name = dbResultSet.getString("location_name");
+					locationIn.location_brand_name = dbResultSet.getString("location_brand_name");
+					locationIn.location_type = dbResultSet.getString("location_type");	
+					locationIn.location_sub_type = "I"; //Inside location flag
+					locationIn.longitude = dbResultSet.getDouble("longitude");
+					locationIn.latitude = dbResultSet.getDouble("latitude");
+					locationIn.radius = dbResultSet.getDouble("radius");
+					locationIn.status_id = dbResultSet.getString("status_id");
+					locationIn.location_tags = dbResultSet.getString("location_tags");	
+					locationIn.start_ts = dbResultSet.getTimestamp("start_ts");
+					locationIn.end_ts = dbResultSet.getTimestamp("end_ts");
+					locationIn.create_ts = dbResultSet.getTimestamp("create_ts");
+					locationIn.update_ts = dbResultSet.getTimestamp("update_ts");		
+					locationIn.distance = dbResultSet.getDouble("distance");	
+					locations.add(locationIn);
+				}
 				
 				location.location_id = dbResultSet.getInt("location_id");
 				location.country_id = dbResultSet.getInt("country_id");
@@ -694,6 +722,7 @@ public class LocationManager extends BaseManager {
 				location.distance = dbResultSet.getDouble("distance"); 
 				
 				locations.add(location);
+								
 			}
 			
 			dbResultSet = dbStatement.executeQuery("select distinct t3.* from tp_location t3, "
