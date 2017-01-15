@@ -82,8 +82,7 @@ public class MessageManager extends BaseManager {
 		
 		return result;
 	}
-	
-	
+		
 	//added by ue 29.08.2016 send Message
 	public OperationResult sendMessage(Message message){
 		
@@ -176,6 +175,14 @@ public class MessageManager extends BaseManager {
 				result.setMessage("sendMessage", "message_id :" + message.message_id + " message_group_id:" + message_group_id + " trace1:"+trace1, 
 						"Message was inserted!");
 				result.object = effectedRows;
+				
+				message.message_group_id = message_group_id;
+				OperationResult op_res = UpdateUserMessageTable(message);
+				
+				/*
+				LogManager logger = new LogManager();	
+				logger.createServerLog(dbStatement, "I" , message.from_user_id, "sendMessage", op_res.message);	
+				*/
 			}			
 			else{
 				result.isSuccess = false;
@@ -183,6 +190,9 @@ public class MessageManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("sendMessage", "sql :" + sql + " trace1:"+trace1, 
 						"Message_id :" + message.message_id + "Message was not inserted!");
+				
+				LogManager logger = new LogManager();	
+				logger.createServerLog(dbStatement, "I" , message.from_user_id, "sendMessage", result.message);	
 			}
 		
 		} catch (SQLException e) {
@@ -190,6 +200,9 @@ public class MessageManager extends BaseManager {
 			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("sendMessage", "sql :" + sql + " trace1:"+trace1, e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", message.from_user_id, "sendMessage", result.message);	
 		}
 		            
 		try {
@@ -293,6 +306,73 @@ public class MessageManager extends BaseManager {
 			return result;
 		}
 	
+	
+	public OperationResult UpdateUserMessageTable(Message message){
+		
+		OperationResult result = new OperationResult();	
+		int effectedRows = 0;
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			/*
+			effectedRows = dbStatement.executeUpdate("UPDATE tp_user_message "
+					   + " SET update_ts = now() "
+					   + " WHERE message_group_id = " + message.message_group_id );	
+			*/
+			
+			effectedRows = dbStatement.executeUpdate("UPDATE tp_user_message "
+					   + " SET update_ts = now() "
+						+ " WHERE ((from_user_id = " + message.from_user_id
+						+ " and to_user_id = " + message.to_user_id + ")"
+						+ " or (from_user_id = " + message.to_user_id 
+						+ " and to_user_id = " + message.from_user_id + "))" );
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("UpdateUserMessageTable", String.valueOf(effectedRows) , " User Message table was updated!");
+				result.object = effectedRows;
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , message.from_user_id, "UpdateUserMessageTable2", result.message);	
+				
+				//dbConnection.commit();
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("UpdateUserMessageTable", String.valueOf(effectedRows) , " User Message group_id:" +message.message_group_id+ " was not updated!");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , message.from_user_id, "UpdateUserMessageTable", result.message);	
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("UpdateUserMessageTable", String.valueOf(message.from_user_id) , e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", message.from_user_id, "UpdateUserMessageTable", result.message);	
+		}
+		
+		/* yukarida cagiriliyor diye kapadim kontrol edilecek 
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
+		return result;
+	}	
+
 }
 
 

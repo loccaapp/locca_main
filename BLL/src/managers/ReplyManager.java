@@ -59,6 +59,9 @@ public class ReplyManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("sendReply", "sql :" + sql , 
 						"user_id :" + reply.user_id + "Reply was not sent!");
+
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , reply.user_id, "sendReply", result.message);				
 			}
 		
 		} catch (SQLException e) {
@@ -66,8 +69,11 @@ public class ReplyManager extends BaseManager {
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("sendReply", "sql :" + sql , e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", reply.user_id, "sendReply", result.message);
 		}
-		            
+		
 		try {
 			dbConnection.close();
 		} catch (SQLException e1) {
@@ -149,5 +155,60 @@ public class ReplyManager extends BaseManager {
 			}
 			return result;
 		}
+
+	//added by ue 15.01.2017 delete Reply
+	public OperationResult deleteReply(Reply reply){
+		
+		OperationResult result = new OperationResult();	
+		int effectedRows = 0;
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			effectedRows = dbStatement.executeUpdate("UPDATE tp_reply "
+					   + " SET status_id = 'D' "
+					   + " WHERE reply_id = " + reply.reply_id 
+					   + " and user_id = " + reply.user_id );	
+
+			//effectedRows = dbStatement.getUpdateCount();			
+			//dbConnection.commit();		
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("deleteReply", String.valueOf(effectedRows) , " Reply was deleted!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("deleteReply", String.valueOf(effectedRows) , " Reply ID:" +reply.reply_id+ " Reply was not deleted!");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , reply.user_id, "deleteReply", result.message);	
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("deleteReply", String.valueOf(reply.reply_id) , e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", reply.user_id, "deleteReply", result.message);	
+		}
+		
+		try {
+			dbConnection.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return result;
+	}	
 
 }

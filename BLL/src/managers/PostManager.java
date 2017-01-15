@@ -718,6 +718,7 @@ public class PostManager extends BaseManager {
 					+" FROM tp_post t1, tp_location t3, tp_user t4 "
 					+" WHERE t1.location_id = t3.location_id "
 					+" and t1.user_id = t4.user_id "
+					+" and t1.status_id = 'A' "
 					+" and t1.create_ts > DATE_SUB(NOW(), " +time_interval_value+ ") "
 					+" ORDER BY t1.like_count - t1.dislike_count DESC, t1.like_count DESC "
 					+" LIMIT "+start*count+", "+count+"";
@@ -857,6 +858,7 @@ public class PostManager extends BaseManager {
 					+" and t1.user_id = t4.user_id "
 					+" and t1.location_id = " + location_id
 					+" and t1.post_type = 'O' "
+					+" and t1.status_id = 'A' "
 					+" and t1.create_ts > DATE_SUB(NOW(), INTERVAL 360 DAY) "
 					+" ORDER BY t1.create_ts DESC "
 					+" LIMIT "+start*count+", "+count+"";
@@ -924,8 +926,7 @@ public class PostManager extends BaseManager {
 	//like ve dislike operasyonlari tekrar duzenlendi.
 	public OperationResult deletePost(long post_id,int user_id){
 		
-		OperationResult result = new OperationResult();
-		LogManager logger =  new LogManager();		
+		OperationResult result = new OperationResult();	
 		int effectedRows = 0;
 		
 		try {
@@ -951,6 +952,9 @@ public class PostManager extends BaseManager {
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("deletePost", String.valueOf(effectedRows) , " Post ID:" +post_id+ "Post was not deleted!");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , user_id, "deletePost", result.message);
 			}
 		
 		} catch (SQLException e) {
@@ -959,7 +963,8 @@ public class PostManager extends BaseManager {
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("deletePost", String.valueOf(post_id) , e.getMessage());
 			
-			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);	
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", user_id, "deletePost", result.message);	
 		}
 		
 		return result;

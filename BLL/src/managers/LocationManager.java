@@ -316,7 +316,7 @@ public class LocationManager extends BaseManager {
 															latitude, 
 															null );
 
-				OperationResult or = insertUserLocation(userLocation);
+				OperationResult or = insertUserLocation(userLocation); 
 								
 			}
 			
@@ -696,10 +696,18 @@ public class LocationManager extends BaseManager {
 					locationIn.location_tags = dbResultSet.getString("location_tags");	
 					locationIn.start_ts = dbResultSet.getTimestamp("start_ts");
 					locationIn.end_ts = dbResultSet.getTimestamp("end_ts");
-					locationIn.create_ts = dbResultSet.getTimestamp("create_ts");
+					locationIn.create_ts = dbResultSet.getTimestamp("create_ts"); 
 					locationIn.update_ts = dbResultSet.getTimestamp("update_ts");		
 					locationIn.distance = dbResultSet.getDouble("distance");	
-					locations.add(locationIn);
+					locations.add(locationIn); 
+					
+					UserLocation userLocation = new UserLocation(user_id, 
+							locationIn.location_id, 
+							longitude, 
+							latitude, 
+							null ); 
+
+					OperationResult or = insertUserLocation(userLocation); 
 				}
 				
 				location.location_id = dbResultSet.getInt("location_id");
@@ -802,7 +810,7 @@ public class LocationManager extends BaseManager {
 				result.setMessage("getNearestAndPopularLocations"
 						, Double.toString(latitude) + Double.toString(longitude)
 						, "Success for location" );
-				result.object = locations;
+				result.object = locations;				
 			}
 			else
 			{
@@ -812,7 +820,11 @@ public class LocationManager extends BaseManager {
 				result.setMessage("getNearestAndPopularLocations"
 						, Double.toString(latitude) + Double.toString(longitude)
 						, "Failure for location");	
-				result.object = locations;
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , user_id, "getNearestAndPopularLocations", result.message);
+				
+				result.object = locations;			
 			}						
 			
 		} catch (SQLException e) {			
@@ -823,6 +835,9 @@ public class LocationManager extends BaseManager {
 					, Double.toString(latitude) + Double.toString(longitude)
 					, e.getMessage());
 			result.object = " ";
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", user_id, "getNearestAndPopularLocations", result.message);	
 		}		
 		
 		try {

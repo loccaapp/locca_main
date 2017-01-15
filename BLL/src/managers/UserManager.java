@@ -384,6 +384,9 @@ public class UserManager extends BaseManager {
 							, "Success for user_id" + Integer.toString(user_id) +
 							">>" + checkUser.isSuccess + ">username>" + user.username );
 					result.object = user_id;
+					
+					LogManager logger =  new LogManager();	
+					logger.createServerLog(dbStatement, "I" , user_id, "insertUser", result.message);	
 				}
 				else
 				{
@@ -392,8 +395,11 @@ public class UserManager extends BaseManager {
 					result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 					result.setMessage("insertUser"
 							,  user.username
-							, "Failure for location" + Integer.toString(user_id) );	
+							, "Failure for user_id" + Integer.toString(user_id) );	
 					result.object = user_id;
+					
+					LogManager logger =  new LogManager();	
+					logger.createServerLog(dbStatement, "I" , user_id, "insertUser", result.message);	
 				}
 			}		
 		} catch (SQLException e) {
@@ -405,6 +411,9 @@ public class UserManager extends BaseManager {
 					, user.username
 					, e.getMessage() + "***:" + sqlStatement);
 			result.object = " ";
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", 0, "insertUser", result.message);	
 		}
 		
 		try {
@@ -685,6 +694,9 @@ public class UserManager extends BaseManager {
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("changeUserPassword", "sql :" + sql , " User ID:" + user.user_id + "User password was not updated!");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , user.user_id, "changeUserPassword", result.message);	
 			}
 		
 		} catch (SQLException e) {
@@ -692,6 +704,9 @@ public class UserManager extends BaseManager {
 			result.returnCode = OperationCode.ReturnCode.Error.Info.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("changeUserPassword", "sql :" + sql , e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", user.user_id, "changeUserPassword", result.message);	
 		}
 		            
 		try {
