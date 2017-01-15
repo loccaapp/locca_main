@@ -63,15 +63,24 @@ public class PostManager extends BaseManager {
 			PreparedStatement pst = dbConnection.prepareStatement(sql);
             pst.setLong(1, post.user_id);
             pst.setInt(2, post.location_id);
-            pst.setString(3, String.valueOf(post.post_type));
+            pst.setString(3, "P");
             pst.setString(4, post.post_text);
             pst.setString(5, post.post_image_id);
             pst.setString(6, post.post_video_id);
+            
+            pst.setString(7, "N");
+            pst.setString(8, "N");
+            pst.setString(9, "N");
+            pst.setString(10, "N");
+            pst.setString(11, "A");
+            /* gecici olarak kapatildi,
+            pst.setString(3, String.valueOf(post.post_type));
             pst.setString(7, post.is_replied);
             pst.setString(8, post.to_fb);
             pst.setString(9, post.to_twitter);
             pst.setString(10, post.to_instagram);
             pst.setString(11, post.status_id);
+            */
             pst.setInt(12, 0); //like_count
             pst.setInt(13, 0); //dislike_count
             pst.setDouble(14, post.longitude);
@@ -154,7 +163,6 @@ public class PostManager extends BaseManager {
 		result.message = "Post updated";
 		return result;
 	}
-
 	
 	public OperationResult setDislikeCount(int post_id, int count){
 		OperationResult result = new OperationResult();
@@ -198,9 +206,10 @@ public class PostManager extends BaseManager {
 						+ " join tp_user on (tp_post.user_id = tp_user.user_id) "
 			            + " left join tp_like on (tp_post.post_id = tp_like.post_id "
 			            + "                   and tp_like.effecter_user_id = " + user_id + " ) " 
-			+ " WHERE tp_post.location_id = "+location_id +" " 
-			+ " ORDER BY tp_post.like_count DESC "
-			+ " LIMIT "+start*count+", "+count+"";
+			+ " WHERE tp_post.location_id = " + location_id 
+			+ "   and tp_post.status_id = 'A' " 
+			+ " ORDER BY tp_post.like_count - tp_post.dislike_count DESC "
+			+ " LIMIT " + start*count + ", " + count + " ";
 			
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
@@ -281,9 +290,10 @@ public class PostManager extends BaseManager {
 						+ " join tp_user on (tp_post.user_id = tp_user.user_id) "
 			            + " left join tp_like on (tp_post.post_id = tp_like.post_id "
 			            + "                   and tp_like.effecter_user_id = " + user_id + " ) " 
-			+ " WHERE tp_post.location_id = "+location_id +" " 
+			+ " WHERE tp_post.location_id = " + location_id 
+			+ "   and tp_post.status_id = 'A' " 
 			+ " ORDER BY tp_post.update_ts DESC "
-			+ " LIMIT "+start*count+", "+count+"";
+			+ " LIMIT " + start*count + ", " + count + " ";
 								
 			dbStatement = (Statement) dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);						
@@ -361,12 +371,13 @@ public class PostManager extends BaseManager {
 					+ " tp_location.location_brand_name,tp_location.location_type,"
 					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
 					+ " tp_user.user_id,tp_user.username, tp_user.picture_id "
-					+"FROM tp_post, tp_location, tp_user "
-					+"WHERE tp_post.user_id = tp_user.user_id "
-					+"and tp_post.location_id = tp_location.location_id "
-					+"and tp_post.user_id = " + user_id
-					+" ORDER BY tp_post.create_ts DESC "
-					+"LIMIT "+start*count+", "+count+"";			
+					+ " FROM tp_post, tp_location, tp_user "
+					+ " WHERE tp_post.user_id = tp_user.user_id "
+					+ " and tp_post.location_id = tp_location.location_id "
+					+ " and tp_post.user_id = " + user_id 
+					+ " and tp_post.status_id = 'A' " 
+					+ " ORDER BY tp_post.create_ts DESC "
+					+ " LIMIT " + start*count + ", " + count + " ";			
 			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
@@ -444,12 +455,13 @@ public class PostManager extends BaseManager {
 					+ " tp_location.location_brand_name,tp_location.location_type,"
 					+ " tp_location.status_id,tp_location.start_ts,tp_location.end_ts,"
 					+ " tp_user.user_id,tp_user.username, tp_user.picture_id "
-					+"FROM tp_post, tp_location, tp_user "
-					+"WHERE tp_post.user_id = tp_user.user_id "
-					+"and tp_post.location_id = tp_location.location_id "
-					+"and tp_post.user_id = " + user_id
-					+" ORDER BY tp_post.like_count DESC "
-					+"LIMIT "+start*count+", "+count+"";
+					+ " FROM tp_post, tp_location, tp_user "
+					+ " WHERE tp_post.user_id = tp_user.user_id "
+					+ " and tp_post.location_id = tp_location.location_id "
+					+ " and tp_post.user_id = " + user_id
+					+ " and tp_post.status_id = 'A' " 
+					+ " ORDER BY tp_post.like_count - tp_post.dislike_count DESC "
+					+ " LIMIT " + start*count + ", " + count + " ";
 			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
@@ -601,8 +613,9 @@ public class PostManager extends BaseManager {
 					+" and t1.location_id = t3.location_id "
 					+" and t1.user_id = t4.user_id "
 					+" and t2.effecter_user_id = " + user_id
+					+" and t1.status_id = 'A' " 
 					+" ORDER BY t1.create_ts DESC "
-					+" LIMIT "+start*count+", "+count+"";
+					+" LIMIT " + start*count + ", " + count + " ";
 			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
@@ -676,19 +689,19 @@ public class PostManager extends BaseManager {
 			
 			if(time_interval==4)
 			{
-				time_interval_value = "INTERVAL 120 DAY";
+				time_interval_value = "INTERVAL 30 DAY";
 			}
 			else if(time_interval==3)
 			{
-				time_interval_value = "INTERVAL 30 DAY";			
+				time_interval_value = "INTERVAL 7 DAY";			
 			}
 			else if(time_interval==2)
 			{
-				time_interval_value = "INTERVAL 7 DAY";			
+				time_interval_value = "INTERVAL 1 DAY";			
 			}
 			else if(time_interval==1)
 			{
-				time_interval_value = "INTERVAL 24 HOUR";			
+				time_interval_value = "INTERVAL 3 HOUR";			
 			}
 			else 
 			{
@@ -706,9 +719,9 @@ public class PostManager extends BaseManager {
 					+" WHERE t1.location_id = t3.location_id "
 					+" and t1.user_id = t4.user_id "
 					+" and t1.create_ts > DATE_SUB(NOW(), " +time_interval_value+ ") "
-					+" ORDER BY t1.like_count DESC, t1.create_ts DESC "
+					+" ORDER BY t1.like_count - t1.dislike_count DESC, t1.like_count DESC "
 					+" LIMIT "+start*count+", "+count+"";
-			
+
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
@@ -905,6 +918,52 @@ public class PostManager extends BaseManager {
 		}
 		return result;
 	}
+		
+	
+	//added by ue 13.08.2016
+	//like ve dislike operasyonlari tekrar duzenlendi.
+	public OperationResult deletePost(long post_id,int user_id){
+		
+		OperationResult result = new OperationResult();
+		LogManager logger =  new LogManager();		
+		int effectedRows = 0;
+		
+		try {
+			
+			dbStatement = (Statement)dbConnection.createStatement();
+			
+			effectedRows = dbStatement.executeUpdate("UPDATE tp_post "
+					   + " SET status_id = 'D' "
+					   + " WHERE post_id ="+post_id+"");	
+
+			//effectedRows = dbStatement.getUpdateCount();			
+			//dbConnection.commit();		
+			
+			if(effectedRows > 0){
+				result.isSuccess = true;
+				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Info_default;
+				result.setMessage("deletePost", String.valueOf(effectedRows) , "Post was deleted!");
+				result.object = effectedRows;
+			}			
+			else{
+				result.isSuccess = false;
+				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
+				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
+				result.setMessage("deletePost", String.valueOf(effectedRows) , " Post ID:" +post_id+ "Post was not deleted!");
+			}
+		
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("deletePost", String.valueOf(post_id) , e.getMessage());
+			
+			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);	
+		}
+		
+		return result;
+	}	
 		
 	//goruntulenen post'larin istatisigi ile ilgili veriler yeni yaratilacak tp_statistics tablosunda tutulacak.
 	

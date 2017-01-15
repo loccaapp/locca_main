@@ -244,8 +244,8 @@ public class MessageManager extends BaseManager {
 					userMessage.is_read = dbResultSet.getString("is_read");
 					userMessage.is_spam = dbResultSet.getString("is_spam");
 					userMessage.status_id = dbResultSet.getString("status_id");
-					//userManager.created_ts = dbResultSet.getTimestamp("created_ts");
-					//userManager.update_ts = dbResultSet.getTimestamp("update_ts");
+					userMessage.created_ts = dbResultSet.getTimestamp("created_ts");
+					userMessage.update_ts = dbResultSet.getTimestamp("update_ts");
 					userMessage.from_username = dbResultSet.getString("from_username");
 					userMessage.from_name_first = dbResultSet.getString("from_name_first");
 					userMessage.from_name_last = dbResultSet.getString("from_name_last");

@@ -12,5 +12,10 @@ public class Reply {
 	public String status_id	;
 	public Timestamp create_ts ;
 	public Timestamp update_ts ;
+	public User user;
+	
+	public Reply(){
+		user = new User();
+	}
 	
 }

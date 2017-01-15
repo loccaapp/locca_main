@@ -22,7 +22,7 @@ public class GetBestPostsByUserId implements RequestHandler<UserPostInDTO, PostO
         		new PostManager().getBestLocsByUserId(input.user_id,         	
 													  input.page_number, 
 													  input.paging_count);        		
-                		
+                        		
         ArrayList<Post> posts;
         
         if(result.isSuccess==true) 
