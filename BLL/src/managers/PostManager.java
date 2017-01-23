@@ -101,6 +101,9 @@ public class PostManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("sendPost", "sql :" + sql , 
 						"user_id :" + post.user_id + "Post was not sent!");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , post.user_id, "sendPost", result.message);
 			}
 		
 		} catch (SQLException e) {
@@ -108,6 +111,9 @@ public class PostManager extends BaseManager {
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("sendPost", "sql :" + sql , e.getMessage());
+			
+			LogManager logger =  new LogManager();	
+			logger.createServerError(dbStatement, "E" , "1", post.user_id, "sendPost", result.message);	
 		}
 		            
 		try {
@@ -526,61 +532,79 @@ public class PostManager extends BaseManager {
 	//lokasyonun icindeki post'lari search eder
 	
 	//added by ue 13.08.2016
-	public OperationResult searchPostInLocation(int location_id, String search_text, int start, int count){
-		
+	public OperationResult searchPostInLocation(int user_id, int location_id, String search_text, int start, int count){
+				
 		OperationResult result = new OperationResult();
-		LogManager logger =  new LogManager();
 		
-		try {			
+		try {
+
+			search_text = search_text.replaceAll("[^a-zA-Z ]", "_");
+			
+			String query = "SELECT * "
+					+ " FROM tp_post join tp_location on (tp_post.location_id = tp_location.location_id) "
+						+ " join tp_user on (tp_post.user_id = tp_user.user_id) "
+			            + " left join tp_like on (tp_post.post_id = tp_like.post_id "
+			            + "                   and tp_like.effecter_user_id = " + user_id + " ) " 
+			+ " WHERE tp_post.location_id = " + location_id 
+			+ "   and tp_post.status_id = 'A' " 
+			+ "   and ( tp_post.post_text like '%" + search_text.trim() + "%' "
+				+ " or  tp_post.post_text like '%" + search_text.toLowerCase().trim() + "%' )" 
+			+ " ORDER BY tp_post.update_ts DESC "
+			+ " LIMIT " + start*count + ", " + count + " ";
+								
 			dbStatement = (Statement) dbConnection.createStatement();
+			dbResultSet = dbStatement.executeQuery(query);						
 			
-			dbResultSet = dbStatement.executeQuery("select * from tp_post, tp_location, tp_user "
-					+ "where "
-					+ "tp_post.location_id = tp_location.location_id and "
-					+ "tp_post.user_id = tp_user.user_id and "
-					+ "tp_post.location_id = " + location_id + " and "
-					+ "tp_post.post_text like '%" + search_text.trim() + "%' "
-					+ "ORDER BY tp_post.create_ts DESC "
-					+ "LIMIT "+start*count+","+count+"");
-			
-			ArrayList<Post> posts = new ArrayList<Post>();
+			ArrayList<Post> searchedPosts = new ArrayList<Post>();
 			while(dbResultSet.next()){
 				Post post = new Post();
 				post.post_id = dbResultSet.getInt("post_id");
 				post.user_id = dbResultSet.getInt("user_id");
-				post.post_text = dbResultSet.getString("post_text");
+				post.post_text = dbResultSet.getString("post_text");				
+				post.create_ts = dbResultSet.getTimestamp("create_ts");
+				post.update_ts = dbResultSet.getTimestamp("update_ts");
+				//post.post_type = dbResultSet.getString("post_type").charAt(0);
 				post.like_count = dbResultSet.getInt("like_count");
 				post.dislike_count = dbResultSet.getInt("dislike_count");
-				post.location.district_name = dbResultSet.getString("district_name"); 
-				post.location.location_name = dbResultSet.getString("location_name"); 
+				post.location.location_id = dbResultSet.getInt("location_id");
+				post.location.district_name = dbResultSet.getString("district_name");
+				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
-				posts.add(post);
-			}			
+				post.post_image_id = dbResultSet.getString("post_image_id");  
+				post.post_video_id = dbResultSet.getString("post_video_id"); 
+				post.user.picture_id = dbResultSet.getString("picture_id"); 
+				post.is_replied = dbResultSet.getString("is_replied");
+				post.like_dislike_ind = dbResultSet.getString("like_dislike_ind");
+				searchedPosts.add(post);
+			}
 			
-			if(posts.size() > 0)
-			{
+			if(searchedPosts.size() > 0){
 				result.isSuccess = true;
 				result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
-				result.setMessage("searchPostInLocation", Integer.toString(location_id), "Success for location_id");
-				result.object = posts;
-			}
-			else
-			{
+				result.setMessage("searchPostInLocation", String.valueOf(location_id), 
+						"Success search list for this location");
+				result.object = searchedPosts;
+			}else{
 				result.isSuccess = false;
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
-				result.setMessage("searchPostInLocation", Integer.toString(location_id) , "Failure for location_id");					
-			}			
+				result.setMessage("searchPostInLocation", String.valueOf(location_id), 
+						"There aren't any posts with this keyword in this location");
+				
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , user_id, "searchPostInLocation", result.message);
+			}	
+						
+		} catch (SQLException e) {
+			result.isSuccess= false;
+			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
+			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
+			result.setMessage("searchPostInLocation", String.valueOf(location_id), e.getMessage());	
 			
-		} catch (SQLException e) {			
-			result.isSuccess = false;
-			result.returnCode = OperationCode.ReturnCode.Error.ordinal();	
-			result.returnCode = OperationCode.ReasonCode.Error_Login;
-			result.setMessage("searchPostInLocation", Integer.toString(location_id) + search_text , e.getMessage());
-			
-			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);
-		}		
+			LogManager logger =  new LogManager();
+			logger.createServerError(dbStatement, "E" , "1", location_id, "searchPostInLocation", result.message);
+		}
 		
 		try {
 			dbConnection.close();
@@ -589,6 +613,7 @@ public class PostManager extends BaseManager {
 			e1.printStackTrace();
 		}
 		return result;
+		
 	}
 	
 	//added by ue 13.08.2016
@@ -920,8 +945,7 @@ public class PostManager extends BaseManager {
 		}
 		return result;
 	}
-		
-	
+			
 	//added by ue 13.08.2016
 	//like ve dislike operasyonlari tekrar duzenlendi.
 	public OperationResult deletePost(long post_id,int user_id){
@@ -935,7 +959,8 @@ public class PostManager extends BaseManager {
 			
 			effectedRows = dbStatement.executeUpdate("UPDATE tp_post "
 					   + " SET status_id = 'D' "
-					   + " WHERE post_id ="+post_id+"");	
+					   + " WHERE post_id = " + post_id 
+					   + " and user_id = " + user_id );	
 
 			//effectedRows = dbStatement.getUpdateCount();			
 			//dbConnection.commit();		

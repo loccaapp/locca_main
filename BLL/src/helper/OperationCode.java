@@ -16,6 +16,7 @@ public class OperationCode {
 		public static int Warning_default = 2000;
 		public static int Warning_NotFound = 2001;
 		public static int Warning_Sql = 2002;
+		public static int Warning_CaseControl = 2003;
 		
 		public static int Error_default = 3000;
 		public static int Error_Sql = 3001;

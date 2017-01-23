@@ -21,11 +21,11 @@ public class SearchPostInLocation implements RequestHandler<SearchPostInDTO,
     public PostOutDTO handleRequest(SearchPostInDTO input, Context context) {
         context.getLogger().log("Input: " + input);        
         
-        OperationResult result = 
-        		new PostManager().searchPostInLocation(input.location_id, 
-								        				input.search_text, 
-								        				input.page_number, 
-								        				input.paging_count);
+        OperationResult result = new PostManager().searchPostInLocation(input.user_id,
+				        												input.location_id, 
+												        				input.search_text, 
+												        				input.page_number, 
+												        				input.paging_count);
                 		
         ArrayList<Post> posts;
         
