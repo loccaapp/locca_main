@@ -37,7 +37,7 @@ public class GetConnectedUsers implements RequestHandler<UserConnectionInDTO, Us
         return new UserConnectionOutDTO(result.isSuccess,
 	        						  result.returnCode,
 	            					  result.reasonCode, 
-	            					  result.message,
+	            					  " " , // result.message,
 	            					  userConList);
     }
 	

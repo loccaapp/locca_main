@@ -704,11 +704,13 @@ public class PostManager extends BaseManager {
 	//bir user'in begendigi loc'lari last'a gore desc siralanacak fonksiyon gerekiyor.
 	
 	//added by ue 13.08.2016
-	public OperationResult getPopularPostsByTimeInterval(int start, int count, int time_interval){
+	public OperationResult getPopularPostsByTimeInterval(int user_id, 
+														 int start, 
+														 int count, 
+														 int time_interval){ 
 		
 		OperationResult result = new OperationResult();
-		LogManager logger =  new LogManager();		
-		String time_interval_value = " ";		
+		String time_interval_value = " ";
 		
 		try {	
 			
@@ -732,7 +734,7 @@ public class PostManager extends BaseManager {
 			{
 				time_interval_value = "INTERVAL 24 HOUR";			
 			}
-			
+			/*
 			String query = "SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text,"
 					+ "t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter,"
 					+ "t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude,"
@@ -747,7 +749,23 @@ public class PostManager extends BaseManager {
 					+" and t1.create_ts > DATE_SUB(NOW(), " +time_interval_value+ ") "
 					+" ORDER BY t1.like_count - t1.dislike_count DESC, t1.like_count DESC "
 					+" LIMIT "+start*count+", "+count+"";
-
+			*/
+			String query = " SELECT t1.post_id,t1.user_id,t1.location_id,t1.post_type,t1.post_text, "
+					+ " t1.post_image_id,t1.post_video_id,t1.is_replied,t1.to_fb,t1.to_twitter, "
+					+ " t1.to_instagram,t1.status_id,t1.like_count,t1.dislike_count,t1.longitude,t1.latitude, "
+					+ " t1.create_ts,t1.update_ts, "
+					+ " t3.location_id,t3.country_id,t3.city_id,t3.district_name,t3.location_name, "
+					+ " t3.location_brand_name,t3.location_type,t3.status_id,t3.start_ts,t3.end_ts, "
+					+ " t4.username, t4.picture_id , t5.like_dislike_ind " 
+					+ " FROM tp_post t1 join tp_location t3 on ( t1.location_id = t3.location_id ) " 
+			        + "      join tp_user t4 on ( t1.user_id = t4.user_id ) "
+				    + "      left join tp_like t5 on (t1.post_id = t5.post_id "
+					+ "    	 					  and t5.effecter_user_id = " +user_id+ ") "
+					+ " WHERE t1.status_id = 'A' "
+					+ " and t1.create_ts > DATE_SUB(NOW(),  " +time_interval_value+ " ) "
+					+ " ORDER BY t1.like_count - t1.dislike_count DESC, t1.like_count DESC "
+					+ " LIMIT " + start*count + ", " + count + " ";			
+			
 			dbStatement = (Statement)dbConnection.createStatement();
 			dbResultSet = dbStatement.executeQuery(query);
 			
@@ -771,6 +789,7 @@ public class PostManager extends BaseManager {
 				post.location.location_name = dbResultSet.getString("location_name");
 				post.user.username = dbResultSet.getString("username");
 				post.user.picture_id = dbResultSet.getString("picture_id");
+				post.like_dislike_ind = dbResultSet.getString("like_dislike_ind");
 				userPosts.add(post);
 			}
 			
@@ -785,6 +804,9 @@ public class PostManager extends BaseManager {
 				result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 				result.reasonCode = OperationCode.ReasonCode.Warning_NotFound;
 				result.setMessage("getPopularPostsByTimeInterval", " " , "There aren't any recorded posts");
+			
+				LogManager logger =  new LogManager();	
+				logger.createServerLog(dbStatement, "I" , user_id, "getPopularPostsByTimeInterval", result.message);
 			}
 			
 		} catch (SQLException e) {
@@ -793,7 +815,8 @@ public class PostManager extends BaseManager {
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
 			result.setMessage("getPopularPostsByTimeInterval", " ", e.getMessage());
 			
-			logger.createServerError(dbStatement, "E" , "1", 0, " ", result.message);
+			LogManager logger =  new LogManager();
+			logger.createServerError(dbStatement, "E" , "1", user_id, "getPopularPostsByTimeInterval", result.message);
 		}
 		
 		try {
