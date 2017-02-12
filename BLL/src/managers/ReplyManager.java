@@ -98,7 +98,7 @@ public class ReplyManager extends BaseManager {
 						+ " from tp_reply t1, tp_user t2 "
 						+ " where t1.user_id = t2.user_id "
 						+ " and t1.post_id = " + rep.post_id 
-						+ " order by t1.create_ts desc "); 
+						+ " order by t1.create_ts asc "); 
 				
 				ArrayList<Reply> userReplies = new ArrayList<Reply>();
 				

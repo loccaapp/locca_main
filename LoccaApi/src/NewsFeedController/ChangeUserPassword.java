@@ -7,17 +7,20 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import helper.OperationResult;
 import OutDTOs.*;
+import InDTOs.*;
 import managers.*;
 import models.*;
 
 //added by ue 01.06.2016
-public class ChangeUserPassword implements RequestHandler<User, BaseOutDTO> {
+public class ChangeUserPassword implements RequestHandler<ChangePwdInDTO, BaseOutDTO> {
 
     @Override
-    public BaseOutDTO handleRequest(User input, Context context) {
+    public BaseOutDTO handleRequest(ChangePwdInDTO input, Context context) {
         context.getLogger().log("Input: " + input);
         
-        OperationResult result = new UserManager().changeUserPassword(input);
+        OperationResult result = new UserManager().changeUserPassword(input.user_id,
+        															  input.existing_user_pwd,
+        															  input.new_user_pwd);
         
         int retVal = 0;        
         if(result.isSuccess == true)
