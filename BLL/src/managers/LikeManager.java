@@ -4,8 +4,7 @@ import java.sql.SQLException;
 
 import com.mysql.jdbc.Statement;
 
-import helper.OperationCode;
-import helper.OperationResult;
+import helper.*;
 import models.Like;
 import models.Post;
 import utils.Timef;
@@ -266,7 +265,6 @@ public class LikeManager extends BaseManager{
 		return result;
 	}
 
-	
 	//added by ue 13.08.2016 sadece bu fonksiyon kullanilabilir.
 	public OperationResult likeOrDislikePost(Like like){
 		
@@ -276,8 +274,7 @@ public class LikeManager extends BaseManager{
 		OperationResult result = new OperationResult();
 		
 		if(like.user_id != like.effecter_user_id)
-		{
-		
+		{		
 			int effectedRows = 0;
 			String log_msg = " "; 
 			
@@ -306,14 +303,37 @@ public class LikeManager extends BaseManager{
 						result.isSuccess = true;
 						result.returnCode = OperationCode.ReturnCode.Info.ordinal();
 						result.reasonCode = OperationCode.ReasonCode.Info_default;
-						result.setMessage("likeOrDislikePost", log_msg + "--" + String.valueOf(effectedRows) , "Like was inserted into tp_like!");
-						result.object = effectedRows;
-						
-						/* 
-						LogManager logger =  new LogManager();				
+						result.setMessage("likeOrDislikePost", log_msg + "--" + String.valueOf(effectedRows) , 
+								"Like was inserted into tp_like!:" + like.like_dislike_ind);
+						result.object = effectedRows;						
+
+						LogManager logger =  new LogManager();
 						log_msg = logger.createServerLog(dbStatement,"I",like.user_id,
-								"likeOrDislikePost1",result2.message ); 
-						*/ 
+								"likeOrDislikePost1",result.message );
+						
+						
+						NotificationManager nm = new NotificationManager();							
+						if(like.like_dislike_ind.trim().contains("L"))
+						{
+							nm.sendNotification(dbConnection,
+												like.post_id,
+												0,
+												like.user_id,
+											    like.effecter_user_id,
+											    Notifications.NtfType.Info,
+											    Notifications.NtfSubType.Liked);
+						}
+						else
+						{
+							nm.sendNotification(dbConnection,
+												like.post_id,
+												0,
+												like.user_id,
+											    like.effecter_user_id,
+											    Notifications.NtfType.Info,
+											    Notifications.NtfSubType.Disliked);
+						}
+						
 						dbConnection.commit();
 					}
 					else
@@ -355,6 +375,7 @@ public class LikeManager extends BaseManager{
 			
 			try {
 				dbConnection.close();
+				dbStatement.close();
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -362,6 +383,7 @@ public class LikeManager extends BaseManager{
 		}
 		else
 		{
+			//bu kontrol front end tarafinda yapilmali.
 			result.isSuccess = false;
 			result.returnCode = OperationCode.ReturnCode.Warning.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Warning_CaseControl;

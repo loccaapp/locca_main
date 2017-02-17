@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.mysql.jdbc.Statement;
 
+import helper.Notifications;
 import helper.OperationCode;
 import helper.OperationResult;
 import models.*;
@@ -179,10 +180,15 @@ public class MessageManager extends BaseManager {
 				message.message_group_id = message_group_id;
 				OperationResult op_res = UpdateUserMessageTable(message);
 				
-				/*
-				LogManager logger = new LogManager();	
-				logger.createServerLog(dbStatement, "I" , message.from_user_id, "sendMessage", op_res.message);	
-				*/
+				NotificationManager nm = new NotificationManager();							
+				nm.sendNotification(dbConnection,
+									0,
+									message_group_id,
+									message.to_user_id,
+									message.from_user_id,
+								    Notifications.NtfType.Info,
+								    Notifications.NtfSubType.Message);
+				
 			}			
 			else{
 				result.isSuccess = false;
@@ -202,7 +208,7 @@ public class MessageManager extends BaseManager {
 			result.setMessage("sendMessage", "sql :" + sql + " trace1:"+trace1, e.getMessage());
 			
 			LogManager logger =  new LogManager();	
-			logger.createServerError(dbStatement, "E" , "1", message.from_user_id, "sendMessage", result.message);	
+			logger.createServerError(dbStatement, "E" , "I", message.from_user_id, "sendMessage", result.message);	
 		}
 		            
 		try {
@@ -305,7 +311,7 @@ public class MessageManager extends BaseManager {
 			}
 			return result;
 		}
-	
+
 	
 	public OperationResult UpdateUserMessageTable(Message message){
 		

@@ -26,4 +26,5 @@ public class OperationCode {
 		
 		public static int Severe_default = 4000;
 	}
+	
 }

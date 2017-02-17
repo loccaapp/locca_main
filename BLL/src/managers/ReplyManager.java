@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.mysql.jdbc.Statement;
 
+import helper.Notifications;
 import helper.OperationCode;
 import helper.OperationResult;
 import models.Location;
@@ -52,6 +53,15 @@ public class ReplyManager extends BaseManager {
 				result.reasonCode = OperationCode.ReasonCode.Info_default;
 				result.setMessage("sendReply", " " , "Reply was sent!");
 				result.object = effectedRows;
+				
+				/* inputtan post'un sahibi user bilgisi de gelmeli, ancak o zaman bildirim olur 
+				NotificationManager nm = new NotificationManager();							
+				nm.sendNotification(dbConnection,
+									message.to_user_id,
+									message.from_user_id,
+								    Notifications.NtfType.Info,
+								    Notifications.NtfSubType.Message);
+				*/
 			}			
 			else{
 				result.isSuccess = false;
