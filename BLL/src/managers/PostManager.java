@@ -640,7 +640,7 @@ public class PostManager extends BaseManager {
 					+" and t2.effecter_user_id = " + user_id
 					+" and t1.status_id = 'A' "
 					+" and t2.like_dislike_ind = 'L' " 
-					+" ORDER BY t1.create_ts DESC "
+					+" ORDER BY t2.create_ts DESC "
 					+" LIMIT " + start*count + ", " + count + " ";
 			
 			dbStatement = (Statement)dbConnection.createStatement();

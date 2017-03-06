@@ -35,10 +35,10 @@ public class SendEmail implements RequestHandler<UserPostInDTO, BaseOutDTO> {
         context.getLogger().log("Input: " + input); 	
         
         String FROM = "uygarer@gmail.com";  // Replace with your "From" address. This address must be verified.
-        String TO = "uygarer@gmail.com"; // Replace with a "To" address. If your account is still in the
+        String TO = "uygarer@yandex.com"; // Replace with a "To" address. If your account is still in the
                                                           // sandbox, this address must be verified.
-        
-        TO = input.email_address;
+        FROM =  "";
+        TO = input.email_address;               
         
         OperationResult result = new OperationResult();
         
@@ -59,7 +59,10 @@ public class SendEmail implements RequestHandler<UserPostInDTO, BaseOutDTO> {
         Message message = new Message().withSubject(subject).withBody(body);
         
         // Assemble the email.
-        SendEmailRequest request = new SendEmailRequest().withSource(FROM).withDestination(destination).withMessage(message);
+        //SendEmailRequest request = new SendEmailRequest().withSource(FROM).withDestination(destination).withMessage(message);
+        
+        SendEmailRequest request = new SendEmailRequest().withDestination(destination).withMessage(message);
+        //SendEmailRequest request2 = new SendEmailRequest().withDestination(destination)
         
         try
         {        
@@ -92,11 +95,16 @@ public class SendEmail implements RequestHandler<UserPostInDTO, BaseOutDTO> {
         {
             System.out.println("The email was not sent.");
             System.out.println("Error message: " + ex.getMessage());
+            System.out.println("FROM: " + FROM);
+            System.out.println("TO: " + TO);
+            
             
 			result.isSuccess= false;
 			result.returnCode = OperationCode.ReturnCode.Error.ordinal();
 			result.reasonCode = OperationCode.ReasonCode.Error_Sql;
-			result.setMessage("SendEmail", String.valueOf(input.user_id), ex.getMessage());
+			result.setMessage("SendEmail", String.valueOf(input.user_id), 
+					"email1:" + FROM + "email2:" + TO + " " 
+				  + ex.getMessage());
 			
         }
 
